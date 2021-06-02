@@ -1,0 +1,514 @@
+Revision
+ICT2107 DISTRIBUTED SYSTEMS PROGRAMMING
+ Course Introduction
+Learning Outcomes
+1.Demonstrate understanding of 
+the principles and techniques 
+behind the 
+design and implementation of distributed systems
+.2.Explain 
+the basic algorithms 
+and their respective assumptions
+.3.Identify 
+software and architecture 
+needed to enable the development of 
+distributed applications
+.4.Write programs that can 
+interoperate using well
+-defined protocols
+.5.Debug a code that spans 
+multiple programs 
+running on several machines
+.6.Design, implement and debug a real distributed system
+. Major Topics & Assessment
+Part 1:
+ŁIntroduction to Distributed Systems
+ŁDistributed System Architectures
+ŁCommunication of Distributed Systems
+ŁDistributed Synchronization
+ Lecture 1: Introduction
+Enablers
+ofDistributed
+Systems
+Definition
+of Distributed Systems
+Important 
+Characteristics
+of Distributed Systems
+Goals
+of Distributed Systems
+Types of Distributed Systems
+ Important Characteristics of DS
+ŁHeterogeneity
+ŒHow align is a DS in supporting 
+heterogeneity?
+ŁTransparency
+ŒHow well a DS hide the details of 
+internal organization, communication and processing 
+from users?
+ŁScalability
+ŒHow well a DS can expand or scale up?
+ŁPartial Failure
+ŒHow well a DS reacts to failure?
+ Main Design Goals
+There are four main goals for 
+DSs Designs
+ŁAccessibility
+: Making resources easily accessible
+ŁTransparency
+: Hiding the fact that resources are 
+distributed
+ŁOpenness
+: Can integrate different hardware/software 
+platforms from different administrative domains
+ŁScalability
+: Can add more hardware/software and 
+serve more users
+ Users Perceive DS as a Single System
+This will reduce the complexity of the system
+-Users 
+don™t have to care about distributed 
+aspects of the system
+-Users 
+can use the system as if it was a local 
+system
+DS should be designed so that users can perceive it as a single 
+system
+This aspect depends heavily on the 
+Transparency
+of 
+the design of DS
+ŁAccess Transparency
+ŁLocation Transparency
+ŁMigration Transparency
+ŁRelocation Transparency
+ŁReplication Transparency
+ŁConcurrency Transparency
+ŁFailure Transparency
+ŁImplementation Transparency
+ Types of Distributed Systems
+There are 3 main types of DSs:
+ŒDistributed 
+Computing
+Systems
+: High performance 
+computing tasks such as Cluster, Grid and Cloud.
+ŒDistributed 
+Information
+Systems
+: Business 
+information systems, e.g. Enterprise Application 
+Integration (EAI).
+ŒDistributed 
+Embedded
+Systems 
+(Pervasive): Small 
+devices
+and components communicating over 
+wireless, e.g. sensor networks, home automation, 
+etc. 
+ Lecture 2: Architectures
+Software
+Architecture
+vs
+System
+Architecture
+Software Architectural Styles
+System Architecture
+ Architectures
+Software Architectures
+tell us
+ŁHow various software components are 
+organized
+ŁHow various software components should 
+interact
+The final instantiation of a software architecture is 
+also referred to as a System Architecture
+ Software Architecture Styles
+Using components and connectors, we can come to 
+various configurations, which
+, in turn are are 
+classified as 
+architectural styles
+Most important 
+Architectural Styles 
+are
+ŁLayered architectures
+ŁObject
+-based architectures
+ŁData
+-centered architectures
+ŁEvent
+-based architectures
+11 System Architectures
+Deciding on software components, their interaction, and their 
+placement leads to 
+an instance of software architecture, called a 
+system architecture
+There are two main forms of system architectures
+: Centralized
+, 
+and 
+Decentralized
+architectures
+ŁCentralized Architectures
+Ł2-tier architectures
+Ł3-tier architectures
+ŁN-tier 
+architectures
+ŁDecentralized Architectures
+ŁStructured peer
+-to-peer
+ŁUnstructured 
+peer
+-to-peer
+ Client/Server Architectures
+Three
+different
+logical
+levels
+suggest
+anumber
+ofpossibilities
+for
+physically
+distributing
+components
+ofaclient/server
+application
+across
+several
+machines
+such
+asŁTwo
+-tiered client/server
+ŁThree
+-tiered client/server
+ŁN-tiered client/server
+13 Decentralized Architectures
+ŁUnstructured
+ŒCentralized
+: Locating of resource is centralized
+ŒFully Decentralized
+: All peers are responsible to assist
+ŒPartially Decentralized
+: Concept of super nodes 
+aggregating a set of peers
+ŁStructured
+ŒDistributed hash tables (DHTs)
+ŒPlace restrictions on overlay structures and data 
+placement
+ŒE.g. Chord, Pastry, Tapestry, CAN
+ Structured P2P: Chord
+ŁEach node is represented by a unique m
+-bit ID (hash of IP 
+address) called 
+NodeID
+ŁEach 
+file is represented by a unique m
+-bit ID (hash of file 
+name) call Key Value
+ŁDistributed 
+Hash Table
+ŒFile name 
+-> Key value
+ŁE.g. xyz.mp3 
+-> K10
+ŒIP address 
+-> Node ID
+ŁE.g. 123.45.67.89 
+-> N14
+ŁKeys 
+are assigned to the successor node whose 
+Node ID 
+>= Keys 
+ŒE.g
+. K10 assigned to N14
+ŁEach 
+node contains info
+ŒKeys
+ŒSuccessor Node ID
+ŁWhen 
+node 
+joins/departures
+ŒWhen a node n joins the network, certain keys
+previously assigned to 
+n™s successor now become assigned to
+n. 
+ŒWhen node n leaves the network, all of its assigned keys are
+reassigned to n™s successor
+.ŒSuccessor Node ID will also change. 
+ Chord 
+ŒFinger 
+Table
+ŁExtend table of each node to 
+mpointers where m is m
+-bit 
+representation of 
+Node ID
+Łith
+finger points to 
+first node that succeeds n
+by at least 2
+i-1N63
+N0 Lecture 3: Communications
+OSI
+Reference
+Model
+Middleware
+Types of Communications
+ Middleware Protocols
+Application
+Application
+6Middleware
+Middleware protocol
+5Transport
+Transport protocol
+4Network
+Network protocol
+3Data link
+Data link protocol
+2Physical
+Physical protocol
+1Network
+An adapted reference model for networked communication
+ Four Types of Communications
+1.Persistent Communication
+2.Transient Communication
+3.Asynchronous Communication
+4.Synchronous Communication
+ Remote Procedure Call (RPC)
+ŁThe solution for this is to use client and server stubs
+RPC should look as much as possible like a local call
+ŁTakes its parameters
+ŁPacks parameters into a message (marshaling)
+ŁSends the message to the server stub
+Client stub
+ŁTakes requests coming from the network
+ŁTransforms them into local procedure calls
+Server stub
+ Message Queuing Systems
+Message
+queuing
+systems
+,ormessage
+oriented
+middleware
+(MOM)
+ŁProvide
+support
+for
+persistent
+asynchronous
+communication
+ŁOffer
+intermediate
+-term
+storage
+capacity
+for
+messages
+ŁSender
+is
+not
+required
+tobe
+active
+during
+message
+transmission
+ŁReceiver
+is
+not
+required
+tobe
+active
+during
+message
+transmission
+Applications
+communicate
+byinserting
+messages
+inspecific
+queue
+ŁThe
+message
+will
+then
+be
+sent
+tothe
+destination
+ Message Broker Approach
+One
+important
+task
+ofMQS
+istointegrate
+applications
+into
+one
+coherent
+DS,
+this
+requires
+ŁReceiver
+and
+sendertoagree
+on
+the
+message
+format
+In general,  
+message broker
+is another application
+ŁMeans
+it
+is
+not
+anintegral
+part
+of
+the
+queuing
+system
+ŁItacts
+asanapplication
+level
+gateway
+ŁToconvert
+messages
+toformat
+that
+can
+be
+read
+byreceiver
+ CONVENTIONAL VS ASYNCHRONOUS RPC
+Client
+Server
+Call local procedure
+and return results
+Wait for result
+Request
+Reply
+Time
+Call remote
+procedure
+Return
+from call
+Client
+Server
+Call local procedure
+Wait for acceptance
+Request
+Accept request
+Time
+Call remote
+procedure
+Return
+from call
+Conventional RPC
+Asynchronous RPC
+ DEFERRED SYNCHRONOUS RPC(s)
+Client
+Server
+Call local procedure
+Wait for acceptance
+Request
+Accept request
+Time
+Call remote
+procedure
+Return
+from call
+Call client with 
+one way RPC
+Return
+results
+Interrupt client
+Acknowledge
+Client and server interacting through two asynchronous RPCs
+ Lecture 4: Synchronization
+ŁClock synchronization
+ŒPhysical clocks
+ŒClock synchronization using 
+Cristian algorithm
+ŁAssumption that the forward and backward delays are 
+approximately same.
+UTC
+Has receiver
+dT
+req
+dT
+res
+BAT1T2T3T4 Logical Clocks
+ŒLamport™s
+Logical 
+Clocks
+: If a 
+-> b 
+then C(a) < C(b
+)06121824303642485476081624324048566977850102030405060708090100m1m2m3m46170ŁNow consider 
+Œm3 leaves P3 at 60 and arrives at P2 at 
+56Œm4 leaves P2 64 and arrives at P1 at 54
+ŒThese values are clearly impossible
+ŁLamport™s
+solution with happens
+-before 
+relation
+ŒEach message carries the sending time
+Œm3 left at 60, it must arrive at 61 or later
+Œm4 left at 69, it must arrive at 70 or later
+ Vector Clock
+P0
+P1
+P2
+VC0= (0, 0, 0)
+VC1= (0, 0, 0)
+VC2= (0, 0, 0)
+time
+VC0= (1, 0, 0)
+VC2= (0, 0, 1)
+VC1= (1, 
+1, 0)
+VC1= (1, 2, 0)
+VC2= (1, 
+2, 
+2)m ts(m) = (1, 0, 0)
+m ts(m) = (1, 2, 0)
+ ŒCentralized algorithm: Single Coordinator
+ŒDecentralized 
+algorithm: Multiple Coordinators
+ŒDistributed 
+algorithm: 
+ŁMulticast request to all processes
+ŁSmaller timestamp wins
+ŒToken ring 
+algorithm
+ŁAcquire token to gain access
+28Mutual Exclusion
+ Election Algorithms
+ŁProcess with higher ID 
+wins. 
+ŒBully algorithm
+ŁDecentralized 
+approach. 
+ŁAny process that 
+detects a coordinator 
+is down can initiate an 
+election
+ŒRing 
+algorithm
+p1
+p2
+p3
+p4
+Celection
+election
+answer
+answer
+1n-13172412815943, 24
+3, 24
+2345n-2n
