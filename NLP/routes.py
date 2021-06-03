@@ -41,3 +41,10 @@ def label():
         "label.html",
         title="Label Documents",
     )
+    
+@app.route("/view")
+def view():
+    return render_template(
+        "view.html",
+        title="View Documents",
+    )

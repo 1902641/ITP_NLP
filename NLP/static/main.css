@@ -90,3 +90,8 @@ a.article-title:hover {
     text-align: center;
     color: gray;
 }
+
+#the-canvas {
+  border: 1px solid black;
+  direction: ltr;
+}
