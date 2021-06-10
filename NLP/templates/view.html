@@ -1,0 +1,239 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container" style="padding-top:6.5%;"></div>
+<div class="row marginLeft">
+    <div class="col-lg">
+        <div class="container-fluid">
+            <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+            <h4>Title of PDF here.</h4>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg">
+                        <canvas id="the-canvas"></canvas>
+                    </div>
+                    <div class="col-lg">
+                        <div class="canvascss">
+                            <button id="prev">Previous</button>
+                            <span>Page: <span id="page_num"></span>/<span id="page_count"></span></span>
+                            <button id="next">Next</button>
+                            &nbsp; &nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm" style="padding-top:35px;">
+        <div class="progress" style="width: 100%;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="80"
+                aria-valuemin="0" aria-valuemax="100" style="width: 75%">
+                <span><span class="percentage">80% Completed</span><span class="grade">32/40</span></span>
+            </div>
+        </div>
+        <div class="whiteBG text-dark container" style="padding-top:5px;font-size: 0.8rem;">
+            <div class="row">
+                <div class="col-sm-6">
+                    <p>Suggested Label</p>
+                    <p>Selected Label</p>
+                    <p>CL for Suggested Label</p>
+                    <p>Number of test cases</p>
+                </div>
+                <div class="col-sm-6">
+                    <p>Door</p>
+                    <p>N/A</p>
+                    <p>80%</p>
+                    <p>28</p>
+                </div>
+            </div>
+
+            <hr class="solid">
+            
+            <form>
+              <div class="form-group">
+                <textarea class="form-control" placeholder="Enter comments here" id="comments" rows="1"></textarea>
+              </div>
+            </form>
+
+            <hr class="solid">
+            <table id="otherLabels" class="display " style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Suggested Labels</th>
+                        <th>Confidence Level</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <button type="button" class="btn btn-secondary btn-invalid" type="button" data-toggle="modal" data-target="#removeFile">Invalid File</button>
+            </div>
+            <div class="col-sm-6" style="margin-left: 73px;">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-secondary btn-clear">Clear</button>
+                    <button type="button" class="btn btn-secondary btn-verify">Verify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Filter</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <select id="choices-multiple-remove-button" placeholder="Select up to 5 tags" multiple>
+                        <option value="Door">Door</option>
+                        <option value="Bed">Bed</option>
+                        <option value="Window">Window</option>
+                        <option value="Fire Resistant Door">Fire Resistant Door</option>
+                        <option value="Fire Resistant Bed">Fire Resistant Bed</option>
+                        <option value="Shatter Resistant Window">Shatter Resistant Window</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Example textarea</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <a href="{{ url_for('view') }}"><button type="submit" class="btn btn-primary">Submit</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // If absolute URL from the remote server is provided, configure the CORS
+    // header on that server.
+    var url = './static/uploads/Flask_Guide.pdf';
+
+    // Loaded via <script> tag, create shortcut to access PDF.js exports.
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    // The workerSrc property shall be specified.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+    var pdfDoc = null,
+        pageNum = 1,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 0.8,
+        canvas = document.getElementById('the-canvas'),
+        ctx = canvas.getContext('2d');
+
+    /**
+     * Get page info from document, resize canvas accordingly, and render page.
+     * @param num Page number.
+     */
+    function renderPage(num) {
+        pageRendering = true;
+        // Using promise to fetch the page
+        pdfDoc.getPage(num).then(function (page) {
+            var viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            var renderTask = page.render(renderContext);
+
+            // Wait for rendering to finish
+            renderTask.promise.then(function () {
+                pageRendering = false;
+                if (pageNumPending !== null) {
+                    // New page rendering is pending
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+            });
+        });
+
+        // Update page counters
+        document.getElementById('page_num').textContent = num;
+    }
+
+    /**
+     * If another page rendering in progress, waits until the rendering is
+     * finised. Otherwise, executes rendering immediately.
+     */
+    function queueRenderPage(num) {
+        if (pageRendering) {
+            pageNumPending = num;
+        } else {
+            renderPage(num);
+        }
+    }
+
+    /**
+     * Displays previous page.
+     */
+    function onPrevPage() {
+        if (pageNum <= 1) {
+            return;
+        }
+        pageNum--;
+        queueRenderPage(pageNum);
+    }
+    document.getElementById('prev').addEventListener('click', onPrevPage);
+
+    /**
+     * Displays next page.
+     */
+    function onNextPage() {
+        if (pageNum >= pdfDoc.numPages) {
+            return;
+        }
+        pageNum++;
+        queueRenderPage(pageNum);
+    }
+    document.getElementById('next').addEventListener('click', onNextPage);
+
+    /**
+     * Asynchronously downloads PDF.
+     */
+    pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+        // Initial/first page rendering
+        renderPage(pageNum);
+    });
+
+    /**
+     * Set up datatable
+     **/
+    function setupData() {
+        $(document).ready(function () {
+            $('#otherLabels').DataTable({
+                "pageLength": 5,
+                "ajax": {
+                    "url": "/index_get_data",
+                    "dataType": "json",
+                    "dataSrc": "data",
+                    "contentType": "application/json"
+                },
+                "columns": [
+                    { "data": "PDF_Name" },
+                    { "data": "Confidence_Level" }
+                ]
+            });
+        });
+    }
+    $(window).on("load", setupData);
+
+</script>
+{% endblock content %}

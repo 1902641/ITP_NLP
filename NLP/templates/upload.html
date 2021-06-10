@@ -1,36 +1,68 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="jumbotron jumbotron-fluid" style="padding:20px;">
-        <h2>Select file(s) to upload</h2>
-        <p>
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class=flashes>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-            {% endwith %}
-        </p>
-        <form method="post" action="/uploading" enctype="multipart/form-data">
-            <dl>
-                <p>
-                    <input type="file" name="files[]" multiple="true" autocomplete="off" required>
-                </p>
-            </dl>
-            <p>
-		<input type="submit" value="Submit">
-	</p>
-</form>
+    <div style="padding-top:8%; background:rgba(255,255,255, 0.6);">
+        <div class="container" style="padding:20px;">
+            <div class="row marginLeft">
+                <div class="col-lg">
+                    <table id="example" class="display " style="width:100%">
+                        <thead>
+                            <tr>                                
+                                <th>PDF Name</th>
+                                <th>Label Attached</th>
+                                <th>Confidence Level</th>
+                                <th>Date of Upload</th>
+                                <th>Manual Check</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>PDF Name</th>
+                                <th>Label Attached</th>
+                                <th>Confidence Level</th>
+                                <th>Date of Upload</th>
+                                <th>Manual Check</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="col-sm-4">
+                    <h4 class="marginLeft">Select file(s) to upload</h4>
+                    {{ dropzone.create(action=url_for('upload_file'))}}
+                    {{ dropzone.config() }}
+                    {{ dropzone.load_js() }}
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <h1>
+                {% if title %}
+                    <title>NLP Labeller - {{ title }}</title>
+                {% else %}
+                    <title>NLP Labeller</title>
+                {% endif %}
+            </h1>
+        </div>
     </div>
-    <div class="container-fluid">
-        <h1>
-            {% if title %}
-                <title>NLP Labeller - {{ title }}</title>
-            {% else %}
-                <title>NLP Labeller</title>
-            {% endif %}
-        </h1>
-    </div>
+    <script>
+    function setupData() {
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "ajax": {
+                    "url": "/upload_get_data",
+                    "dataType": "json",
+                    "dataSrc": "data",
+                    "contentType": "application/json"
+                },
+                "columns": [
+                    { "data": "PDF_Name" },
+                    { "data": "Label_Attached" },
+                    { "data": "Confidence_Level" },
+                    { "data": "DateOfUpload" },
+                    { "data": "ManualCheck" },
+                ]
+            });
+        });
+    }
+    $(window).on("load", setupData);
+    </script>
 {% endblock content %}

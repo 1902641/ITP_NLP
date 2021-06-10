@@ -1,8 +1,0 @@
-flask
-tox
-jinja2
-pdf2image
-fpdf
-conda 
-python-poppler
-PyPDF2

@@ -1,48 +1,117 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {{ dropzone.load_css() }}
+    <style>
+      .dropzone {
+        border: 2px dashed #0087F7;
+        margin: 10%;
+        min-height: 200px;
+      }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
     
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/main.css">
-    {% if title %}
-        <title>NLP Labeller - {{ title }}</title>
-    {% else %}
-        <title>NLP Labeller</title>
-    {% endif %}
+    <!--Datatables-->
+    <link rel="stylesheet" type="text/css" href="https:////cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"/>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 
-</head>
-<body>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/main.css">
+
+    {% if title %}
+    <title>NLP Labeller - {{ title }}</title>
+    {% else %}
+    <title>NLP Labeller</title>
+    {% endif %}
+  </head>
+
+  <body>
     <header class="site-header">
-      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-        <div class="container">
-          <a class="navbar-brand mr-4" href="/">NLP Labeller</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="seperator_div">
+        <div class="seperator"></div>
+      </div>
+      <nav class="navbar navbar-expand-md  fixed-top">
+        <div class="container navContainer">
+          <a class="navbar-brand mr-4" href="/"><img class="logo"
+              src="https://mc-68095c24-9d47-44d2-a4ee-620361-cdn-endpoint.azureedge.net/-/media/images/logos/header-logo-new.jpg?iar=0&amp;rev=f873be544e0345fb913a9fe94e35365d&amp;extension=webp&amp;hash=F12E9090E1EE4F8C63066055D5948A61"
+              alt="Element" disablewebediting="True"></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+            aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarToggle">
+          <div id="container">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('upload_form') }}">Upload Documents</a>
-              <a class="nav-item nav-link" href="{{ url_for('label') }}">Label Documents</a>
+              <a class="nav-item nav-link orangeBtn"  href="{{ url_for('upload_form') }}"><button class="navBtn">Upload Documents</button></a>
+              <a class="nav-item nav-link purpleBtn"><button class="navBtn" type="button" data-toggle="modal" data-target="#myModal">Label Documents</button></a>
             </div>
           </div>
         </div>
+        </div>
+        </div>
       </nav>
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Filter</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                 <select id="choices-multiple-remove-button" placeholder="Select up to 5 tags" multiple>
+                    <option value="Door">Door</option>
+                    <option value="Bed">Bed</option>
+                    <option value="Window">Window</option>
+                    <option value="Fire Resistant Door">Fire Resistant Door</option>
+                    <option value="Fire Resistant Bed">Fire Resistant Bed</option>
+                    <option value="Shatter Resistant Window">Shatter Resistant Window</option>
+                  </select>
+            </div>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1">Example textarea</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+              </div>
+            </form>
+            <div class="modal-footer">
+              <a href="{{ url_for('view') }}"><button type="submit" class="btn btn-primary">Submit</button></a>
+            </div>
+          </div>
+          
+        </div>
     </header>
-    <main role="main" class="container">
-        {% block content %}{% endblock %}
-    </main>
+        <main role="main" class="container">
+          <img src="/static/img/element_logo.png" class="background_Element" alt="Element_Background" />
+          {% block content %}{% endblock %}
+        </main>
 
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+          integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+          crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+          integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+          crossorigin="anonymous"></script>
+  </body>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
+  <script>
+  $(document).ready(function(){
+    var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
+    removeItemButton: true,
+    maxItemCount:5,
+    searchResultLimit:5,
+    renderChoiceLimit:5
+    });
+  });
+  </script>
 </html>

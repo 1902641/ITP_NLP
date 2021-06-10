@@ -1,5 +1,6 @@
 venv/Scripts/activate
 
+pip install the following but it should be in the venv
 flask
 tox - #Used to run the test suite against multiple Python versions.
 jinja2
@@ -7,7 +8,11 @@ pdf2image
 fpdf
 conda 
 poppler
-
+PyPDF2
+Flask-Dropzone
+wtforms
+Flask-Excel
+tablib[pandas]
 
 Label Page : 
     - Retrieve all images and display (With page number)
