@@ -5,22 +5,9 @@
 <div class="row marginLeft">
     <div class="col-lg">
         <div class="container-fluid">
-            <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
             <h4>Title of PDF here.</h4>
             <div class="container">
-                <div class="row">
-                    <div class="col-lg">
-                        <canvas id="the-canvas"></canvas>
-                    </div>
-                    <div class="col-lg">
-                        <div class="canvascss">
-                            <button id="prev">Previous</button>
-                            <span>Page: <span id="page_num"></span>/<span id="page_count"></span></span>
-                            <button id="next">Next</button>
-                            &nbsp; &nbsp;
-                        </div>
-                    </div>
-                </div>
+                <iframe frameborder='0' noresize='noresize' style='position: absolute; background: transparent; width: 450px; height:550px;' src="/pdf?file=static/uploads/Flask_Guide.pdf" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -65,7 +52,7 @@
                 </thead>
             </table>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top: 10px;">
             <div class="col-sm-4">
                 <button type="button" class="btn btn-secondary btn-invalid" type="button" data-toggle="modal" data-target="#removeFile">Invalid File</button>
             </div>
@@ -234,6 +221,5 @@
         });
     }
     $(window).on("load", setupData);
-
 </script>
 {% endblock content %}

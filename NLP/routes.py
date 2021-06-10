@@ -9,23 +9,21 @@ import os
 ALLOWED_EXTENSIONS = set(['pdf'])
 
 
-
-
-
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 labelsList = csvReader.readCSV()
 
 @app.route("/")
 def home():
-	return render_template("home.html")
+	return render_template("home.html", labelsList=labelsList)
 
 
 @app.route('/upload')
 def upload_form():
 	pdfManagement.retrieveListOfPDF()
-	return render_template('upload.html')
+	return render_template('upload.html', labelsList=labelsList)
 
 
 @app.route('/uploading', methods=['POST'])
@@ -41,14 +39,16 @@ def upload_file():
 				filename = secure_filename(file.filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		flash('File(s) successfully uploaded')
-		return redirect('/upload')
+		return redirect('/upload' , labelsList=labelsList)
 
 
 @app.route("/label")
 def label():
     return render_template(
         "label.html",
-        title="Label Documents",
+        title="Label Documents", 
+		labelsList=labelsList
+		
     )
 
 
@@ -173,4 +173,11 @@ def uploadData():
 
 @app.route("/view")
 def view():
-	return render_template("view.html", title="View Documents")
+	return render_template("view.html", title="View Documents", labelsList=labelsList)
+
+@app.route("/pdf")
+def pdf():
+    return render_template(
+            "pdf.html",
+            title="render Documents",
+    )
