@@ -48,3 +48,14 @@ def view():
         "view.html",
         title="View Documents",
     )
+
+@app.route('/locale/<path:path>')
+def send_js(path):
+    return send_from_directory('locale', path)
+
+@app.route("/pdf")
+def pdf():
+    return render_template(
+            "pdf.html",
+            title="render Documents",
+    )
