@@ -105,7 +105,7 @@ def uploadData():
 		"ManualCheck": "True"
       },
 	  {
-		"PDF_Name" : "Fire Resistance Door.pdf",
+                "PDF_Name" : "pdf.pdf",
 		"Label_Attached": "Door",
 		"Confidence_Level": "88%",
 		"DateOfUpload": "6/6/2021",
@@ -173,7 +173,8 @@ def uploadData():
 
 @app.route("/view")
 def view():
-	return render_template("view.html", title="View Documents", labelsList=labelsList)
+    file = request.args.get('file')
+    return render_template("view.html", title="View Documents", labelsList=labelsList, file=file)
 
 @app.route("/pdf")
 def pdf():
@@ -181,3 +182,4 @@ def pdf():
             "pdf.html",
             title="render Documents",
     )
+

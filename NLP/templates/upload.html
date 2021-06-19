@@ -54,7 +54,10 @@
                     "contentType": "application/json"
                 },
                 "columns": [
-                    { "data": "PDF_Name" },
+                    { "data": "PDF_Name" ,
+        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            $(nTd).html("<a href='http://localhost:5000/view?file="+oData.PDF_Name+"'>"+oData.PDF_Name+"</a>");
+        } },
                     { "data": "Label_Attached" },
                     { "data": "Confidence_Level" },
                     { "data": "DateOfUpload" },
