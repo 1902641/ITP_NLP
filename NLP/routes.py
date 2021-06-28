@@ -5,9 +5,10 @@ from NLP import app, pdfManagement, csvReader
 import flask_excel as excel
 import urllib.request, json
 import os
+from NLP.nlp_model.BERTModel import BERTModel
+import pandas as pd
 
 ALLOWED_EXTENSIONS = set(['pdf'])
-
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -39,6 +40,65 @@ def upload_file():
 				filename = secure_filename(file.filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		flash('File(s) successfully uploaded')
+
+		# -------------------------------------------------------------------
+		# # Assuming this is where text extraction and prediction will be done
+		# # Makeshift label list loader
+		# label_file = open("label.txt", "r")
+		# label_list = label_file.read().splitlines()
+
+		# # Load the labels first before loading model
+		# bert_model = BERTModel()
+		# bert_model.load_label_list(label_list)
+
+		# # Optional - load or save to different directory
+		# # If loading different models, call this before load_model()
+		# new_directory = "./bert_model_v2"
+		# bert_model.set_output_model_directory(new_directory)
+		# bert_model.output_model_directory(new_directory)
+
+		# Call load model if configuration are done
+		# bert_model.load_model()
+
+		# # Single Prediction
+		# single_string = "Single string to test"
+		# # Clean text for model to predict
+		# single_string = bert_model.clean_text(single_string)
+		# bert_model.predict(single_string, single_prediction=True)
+
+		# Batch Prediction - for a list of predictions to perform
+		# batch_string = [single_string, single_string, single_string]
+		# # As always, clean text for model to predict
+		# batch_string = list(map(bert_model.clean_text, batch_string))
+		# # By default, single prediction is set to false
+		# bert_model.predict(batch_string)
+
+		# -------------------------------------------------------------------
+
+		# # Batch Training - requires dataframe
+		# # each index of each list must corresponds to the same pdf or contents
+		# directory = []
+		# file = []
+		# text = [] # Extracted text from pdf
+		# label = []
+		# dataframe = pd.DataFrame(list(zip(directory, file, text, label)), columns=['directory', 'file', 'text', 'label'])
+
+		# # Fit the training data into the model and call the training function
+		# # if re-training, set a new directory before calling the train()
+		# bert_model.fit(dataframe=dataframe)
+		# # bert_model.set_output_model_directory(new_directory)
+		# # bert_model.output_model_directory(new_directory)
+		# bert_model.train()
+
+		# # After training, save the label list in case of any newly added label(s)
+		# # Makeshift label list saver
+		# # Actual labels can be retrieved from bert_model.label_list
+		# label_file = open("label.txt", "w")
+		# label_list = bert_model.label_list
+		# for label in label_list:
+		# 	label_file.write(label + "\n")
+		# label_file.close()
+
 		return redirect('/upload' , labelsList=labelsList)
 
 
