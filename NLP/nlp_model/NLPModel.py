@@ -1,3 +1,5 @@
+import pandas as pd
+
 class NLPModel:
     def load_label_list(self, in_label_list: list):
         pass

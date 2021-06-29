@@ -14,11 +14,13 @@ txtpath = os.path.join(os.path.dirname( __file__ ), 'static', 'text_extraction')
 
 def retrieveListOfPDF():
     f = []
+    text_extract = []
     for (dirpath, dirnames, filenames) in walk(mypath):
         f.extend(filenames)
         break
     for item in f:
-        pdfToTxt(item)
+        text_extract.append(pdfToTxt(item))
+    return f, text_extract
 
 def pdfToTxt(filename):
     #Open file Path
@@ -45,5 +47,6 @@ def pdfToTxt(filename):
     text_file = open(os.path.join(txtpath, x[0]+'.txt'), "w", encoding='utf-8')
     text_file.write(TextString)
     text_file.close()
+    return TextString
     
     

@@ -31,7 +31,7 @@ def upload_form():
 def upload_file():
 	if request.method == 'POST':
         # check if the post request has the files part
-		if 'files[]' not in request.files:
+		if 'file' not in request.files:
 			flash('No file part')
 			return redirect(request.url)
 		files = request.files.getlist('files[]')
@@ -40,17 +40,20 @@ def upload_file():
 				filename = secure_filename(file.filename)
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		flash('File(s) successfully uploaded')
-
 		# -------------------------------------------------------------------
 		# # Assuming this is where text extraction and prediction will be done
 		# # Makeshift label list loader
-		# label_file = open("label.txt", "r")
-		# label_list = label_file.read().splitlines()
+		label_file = open("./NLP/nlp_model/label.txt", "r")
+		label_list = label_file.read().splitlines()
 
 		# # Load the labels first before loading model
-		# bert_model = BERTModel()
-		# bert_model.load_label_list(label_list)
+		bert_model = BERTModel()
+		bert_model.load_label_list(label_list)
 
+		file_names, text_extracted = pdfManagement.retrieveListOfPDF()
+		# Clean text for model to predict
+		text_extracted = list(map(bert_model.clean_text, text_extracted))
+		file_dataframe = pd.DataFrame(list(zip(file_names, text_extracted)), columns=["file", "text"])
 		# # Optional - load or save to different directory
 		# # If loading different models, call this before load_model()
 		# new_directory = "./bert_model_v2"
@@ -58,20 +61,25 @@ def upload_file():
 		# bert_model.output_model_directory(new_directory)
 
 		# Call load model if configuration are done
-		# bert_model.load_model()
+		bert_model.load_model()
 
-		# # Single Prediction
-		# single_string = "Single string to test"
-		# # Clean text for model to predict
-		# single_string = bert_model.clean_text(single_string)
-		# bert_model.predict(single_string, single_prediction=True)
-
-		# Batch Prediction - for a list of predictions to perform
-		# batch_string = [single_string, single_string, single_string]
-		# # As always, clean text for model to predict
-		# batch_string = list(map(bert_model.clean_text, batch_string))
-		# # By default, single prediction is set to false
-		# bert_model.predict(batch_string)
+		# Determine if single prediction or batch
+		single_prediction = False
+		if len(file_names) == 1:
+			single_prediction = True
+		# Map predicted results to each row in dataframe
+		predict_results = bert_model.predict(file_dataframe['text'], single_prediction=single_prediction)
+		result_prob = []
+		predict_label = []
+		predict_label_code = []
+		for x in predict_results:
+			result_prob.append(x[1])
+			predict_label.append(x[3])
+			predict_label_code.append(x[2])
+		file_dataframe['predicted_label_code'] = predict_label_code
+		file_dataframe['predicted_label'] = predict_label
+		file_dataframe['probabilities'] = result_prob
+		print(file_dataframe[['file','predicted_label','predicted_label_code']])
 
 		# -------------------------------------------------------------------
 
@@ -93,7 +101,7 @@ def upload_file():
 		# # After training, save the label list in case of any newly added label(s)
 		# # Makeshift label list saver
 		# # Actual labels can be retrieved from bert_model.label_list
-		# label_file = open("label.txt", "w")
+		# label_file = open("./NLP/nlp_model/label.txt", "w")
 		# label_list = bert_model.label_list
 		# for label in label_list:
 		# 	label_file.write(label + "\n")

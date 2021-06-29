@@ -1,4 +1,4 @@
-from NLP.nlp_model import NLPModel
+from NLP.nlp_model.NLPModel import NLPModel
 # For ML
 import numpy as np
 import re
