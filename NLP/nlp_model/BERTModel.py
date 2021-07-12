@@ -5,6 +5,7 @@ import re
 import os
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+from sklearn.utils import column_or_1d
 import nltk
 from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split
@@ -20,6 +21,13 @@ import bert.tokenization as tokenization
 import tensorflow_hub as hub
 
 
+class CustomLabelEncoder(LabelEncoder):
+    def fit(self, y):
+        y = column_or_1d(y, warn=True)
+        self.classes_ = pd.Series(y).unique()
+        return self
+
+
 class BERTModel(NLPModel):
     def __init__(self):
         """
@@ -31,7 +39,8 @@ class BERTModel(NLPModel):
         # Run the below line to download for the first run
         nltk.download('stopwords')
         self.bert_model_to_load_from_hub = "https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1"
-        self.OUTPUT_DIR = './bert_model'
+        # self.OUTPUT_DIR = './bert_model'
+        self.OUTPUT_DIR = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'bert_model'))
         self.SAVE_DIR = './saved_model'
         self.LOAD_DIR = './saved_model/1623831954'
         self.full_dataframe = pd.DataFrame()
@@ -41,10 +50,12 @@ class BERTModel(NLPModel):
         self.estimator = tf.estimator.Estimator
         self.MAX_SEQ_LENGTH = 100
         self.tokenizer = self.create_tokenizer()
-        self.label_encoder = LabelEncoder()
+        self.label_encoder = CustomLabelEncoder()
+        self.trained_length = 12
 
     def load_label_list(self, in_label_list: list):
         self.label_list = in_label_list
+        self.trained_length = len(self.label_list)
         self.label_encoder.fit(self.label_list)
         self.numeric_label_list = self.label_encoder.transform(self.label_list)
 
@@ -73,7 +84,7 @@ class BERTModel(NLPModel):
         run_config = tf.estimator.RunConfig(model_dir=self.OUTPUT_DIR, save_summary_steps=SAVE_SUMMARY_STEPS,
                                             save_checkpoints_steps=SAVE_CHECKPOINTS_STEPS, session_config=sess_config)
 
-        model_function = self.model_function_builder(num_labels=len(self.numeric_label_list),
+        model_function = self.model_function_builder(num_labels=self.trained_length,
                                                      learning_rate=LEARNING_RATE,
                                                      num_train_steps=num_train_steps,
                                                      num_warmup_steps=num_warmup_steps)
@@ -81,7 +92,7 @@ class BERTModel(NLPModel):
                                                 config=run_config,
                                                 params={"batch_size": BATCH_SIZE})
 
-    def fit(self, dataframe: pd.DataFrame):
+    def fit(self, dataframe: pd.DataFrame, in_labels: list):
         """
         Insert training dataframe to model
         """
@@ -90,12 +101,20 @@ class BERTModel(NLPModel):
         # self.numeric_label_list = [x for x in np.unique(self.dataframe.label)]
         # Convert labels to be numeric for the model to classify
         train_label_list = [x for x in np.unique(self.dataframe.label)]
+        self.label_list = in_labels
         for label in train_label_list:
             if label not in self.label_list:
                 self.label_list.append(label)
         self.label_encoder.fit(self.label_list)
+        self.trained_length = len(self.label_list)
+        test_labels = [x for x in np.unique(self.dataframe.label)]
+        print('test labels: ...')
+        print(test_labels)
         self.numeric_label_list = self.label_encoder.transform(self.label_list)
         self.dataframe['label'] = self.label_encoder.transform(self.dataframe['label'])
+        test_labels = [x for x in np.unique(self.dataframe.label)]
+        print('test labels: ...')
+        print(test_labels)
         # Preprocess the text by cleaning the text fit for reading by model
         self.dataframe['text'] = self.dataframe['text'].apply(self.clean_text)
         self.dataframe['text'] = self.dataframe['text'].str.replace('\d+', '')
@@ -103,14 +122,16 @@ class BERTModel(NLPModel):
 
     def train(self):
         # Split into training and validation
-        train_set, validation_set = train_test_split(self.dataframe, test_size=0.2, random_state=35)
+        train_set, validation_set = train_test_split(self.dataframe, test_size=0.1, random_state=35)
         train_set.reset_index(drop=True, inplace=True)
 
         label_list = [x for x in np.unique(train_set.label)]
         print("Self label list: ")
         print(self.label_list)
+        print("Encoded label list: ")
+        print(self.numeric_label_list)
 
-        self.numeric_label_list = label_list
+        # self.numeric_label_list = label_list
 
         print("training label list: ")
         print(label_list)
@@ -154,7 +175,6 @@ class BERTModel(NLPModel):
                                                                                       text_a=x[self.DATA_COLUMN],
                                                                                       text_b=None,
                                                                                       label=x[self.LABEL_COLUMN]), axis=1)
-        print(validation_set[self.DATA_COLUMN].iloc[0])
         train_features = run_classifier.convert_examples_to_features(train_input, label_list, self.MAX_SEQ_LENGTH, self.tokenizer)
         validation_features = run_classifier.convert_examples_to_features(validation_input, label_list, self.MAX_SEQ_LENGTH,
                                                                           self.tokenizer)
@@ -173,7 +193,7 @@ class BERTModel(NLPModel):
         run_config = tf.estimator.RunConfig(model_dir=self.OUTPUT_DIR, save_summary_steps=SAVE_SUMMARY_STEPS,
                                             save_checkpoints_steps=SAVE_CHECKPOINTS_STEPS, session_config=sess_config)
 
-        model_function = self.model_function_builder(num_labels=len(label_list),
+        model_function = self.model_function_builder(num_labels=self.trained_length,
                                                      learning_rate=LEARNING_RATE,
                                                      num_train_steps=num_train_steps,
                                                      num_warmup_steps=num_warmup_steps)
@@ -199,8 +219,8 @@ class BERTModel(NLPModel):
         result = estimator.evaluate(input_fn=validation_input_fn, steps=None)
         print("Results")
         print(result)
-        self.estimator = estimator
-        self.save_model()
+        # self.estimator = estimator
+        # self.save_model()
 
     def clean_text(self, text):
         """

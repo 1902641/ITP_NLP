@@ -48,14 +48,35 @@
           </button>
           <div id="container">
             <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link blueBtn"><button class="navBtn" type="button" data-toggle="modal" data-target="#trainModal">Upload Training Set</button></a>
               <a class="nav-item nav-link orangeBtn"  href="{{ url_for('upload_form') }}"><button class="navBtn">Upload Documents</button></a>
               <a class="nav-item nav-link purpleBtn"><button class="navBtn" type="button" data-toggle="modal" data-target="#myModal">Label Documents</button></a>
             </div>
           </div>
         </div>
-        </div>
-        </div>
       </nav>
+    <!-- Training Modal -->
+    <div id="trainModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Upload Documents for Training</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_train') }}">
+                <label for="label">Label List:</label>
+                <input type="file" name="labels" id="label"><br>
+                <label for="files">Training Set:</label>
+                <input type="file" name="files" multiple id="files"><br>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                </div>
+            </form>
+          </div>
+
+        </div>
     <!-- Modal -->
     <div id="myModal" class="modal fade" role="dialog">
       <div class="modal-dialog">

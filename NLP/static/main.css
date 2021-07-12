@@ -17,6 +17,11 @@ html{
   margin-top:8%;
 }
 
+.blueBtn{
+  height:100%;
+  background-color: #0a84ff;
+}
+
 .orangeBtn{
   background-color:#F39200;
   height:100%

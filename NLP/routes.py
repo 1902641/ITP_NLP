@@ -27,6 +27,47 @@ def upload_form():
 	return render_template('upload.html', labelsList=labelsList)
 
 
+@app.route('/train', methods=['POST'])
+def upload_train():
+	print("Request sent here")
+	if request.method == 'POST':
+		if 'files' in request.files and 'labels' in request.files:
+			files = request.files.getlist('files')
+			training_dataframe = pd.read_csv(request.files.get('labels'))
+			training_dataframe = training_dataframe.iloc[:, 1:]
+			file_name_list = []
+			training_label = []
+			text_extraction = []
+			print("files uploaded")
+			for file in files:
+				if file and allowed_file(file.filename):
+					filename = secure_filename(file.filename)
+					file.save(os.path.join(app.config['TRAIN_FOLDER'], filename))
+					print(file.filename, ' file saved')
+					file_name_list.append(file.filename)
+					found_label = training_dataframe[training_dataframe['filepath'].str.contains(file.filename, case=False, regex=False)]
+					training_label.append(found_label['ProductTypeCode'].iloc[0])
+					text_extraction.append(pdfManagement.extract_pdf(file.filename))
+				else:
+					print('file saved failed')
+			dataframe = pd.DataFrame(list(zip(file_name_list, text_extraction, training_label)), columns=['file', 'text', 'label'])
+			label_file = open("./NLP/nlp_model/label.txt", "r")
+			label_list = label_file.read().splitlines()
+
+			# # Load the labels first before loading model
+			bert_model = BERTModel()
+			bert_model.fit(dataframe=dataframe, in_labels=label_list)
+			bert_model.train()
+
+			label_file = open("./NLP/nlp_model/label.txt", "w")
+			label_list = bert_model.label_list
+			for label in label_list:
+				label_file.write(label + "\n")
+			label_file.close()
+
+	return render_template("home.html", labelsList=labelsList)
+
+
 @app.route('/uploading', methods=['POST'])
 def upload_file():
 	if request.method == 'POST':
@@ -79,17 +120,16 @@ def upload_file():
 		file_dataframe['predicted_label_code'] = predict_label_code
 		file_dataframe['predicted_label'] = predict_label
 		file_dataframe['probabilities'] = result_prob
-		print(file_dataframe[['file','predicted_label','predicted_label_code']])
+		print(file_dataframe[['file','predicted_label']])
 
 		# -------------------------------------------------------------------
 
 		# # Batch Training - requires dataframe
 		# # each index of each list must corresponds to the same pdf or contents
-		# directory = []
 		# file = []
 		# text = [] # Extracted text from pdf
 		# label = []
-		# dataframe = pd.DataFrame(list(zip(directory, file, text, label)), columns=['directory', 'file', 'text', 'label'])
+		# dataframe = pd.DataFrame(list(zip(file, text, label)), columns=['file', 'text', 'label'])
 
 		# # Fit the training data into the model and call the training function
 		# # if re-training, set a new directory before calling the train()

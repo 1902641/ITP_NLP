@@ -16,7 +16,7 @@ class NLPModel:
     def create_tokenizer(self):
         pass
 
-    def fit(self, dataframe: pd.DataFrame):
+    def fit(self, dataframe: pd.DataFrame, labels: list):
         pass
 
     def train(self):
