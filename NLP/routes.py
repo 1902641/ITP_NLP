@@ -23,7 +23,7 @@ def home():
 
 @app.route('/upload')
 def upload_form():
-	pdfManagement.retrieveListOfPDF()
+	# pdfManagement.retrieveListOfPDF()
 	return render_template('upload.html', labelsList=labelsList)
 
 
@@ -121,31 +121,6 @@ def upload_file():
 		file_dataframe['predicted_label'] = predict_label
 		file_dataframe['probabilities'] = result_prob
 		print(file_dataframe[['file','predicted_label']])
-
-		# -------------------------------------------------------------------
-
-		# # Batch Training - requires dataframe
-		# # each index of each list must corresponds to the same pdf or contents
-		# file = []
-		# text = [] # Extracted text from pdf
-		# label = []
-		# dataframe = pd.DataFrame(list(zip(file, text, label)), columns=['file', 'text', 'label'])
-
-		# # Fit the training data into the model and call the training function
-		# # if re-training, set a new directory before calling the train()
-		# bert_model.fit(dataframe=dataframe)
-		# # bert_model.set_output_model_directory(new_directory)
-		# # bert_model.output_model_directory(new_directory)
-		# bert_model.train()
-
-		# # After training, save the label list in case of any newly added label(s)
-		# # Makeshift label list saver
-		# # Actual labels can be retrieved from bert_model.label_list
-		# label_file = open("./NLP/nlp_model/label.txt", "w")
-		# label_list = bert_model.label_list
-		# for label in label_list:
-		# 	label_file.write(label + "\n")
-		# label_file.close()
 
 		return redirect('/upload' , labelsList=labelsList)
 
