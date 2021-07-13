@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container">
+        <div class="center">
+            {% if train_flag %}
+                <div class="alert alert-success">
+                <h3 class="alert-heading">Training Completed!</h3>
+                <hr>
+                <p class="mb-0">Refer to the 'train.csv' for the list of documents that were used for training overall</p>
+                </div>
+            {% else %}
+                <div class="alert alert-danger">
+                <h3 class="alert-heading">Training Failed!</h3>
+                <hr>
+                <p class="mb-0">Either there was no document uploaded for training or something went wrong.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

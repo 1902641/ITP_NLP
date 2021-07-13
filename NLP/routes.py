@@ -31,7 +31,7 @@ def upload_form():
 def upload_train():
 	print("Request sent here")
 	if request.method == 'POST':
-		if 'files' in request.files and 'labels' in request.files:
+		if request.files['files'].filename != '' and request.files['labels'].filename != '':
 			files = request.files.getlist('files')
 			training_dataframe = pd.read_csv(request.files.get('labels'))
 			training_dataframe = training_dataframe.iloc[:, 1:]
@@ -50,9 +50,40 @@ def upload_train():
 					text_extraction.append(pdfManagement.extract_pdf(file.filename))
 				else:
 					print('file saved failed')
-			dataframe = pd.DataFrame(list(zip(file_name_list, text_extraction, training_label)), columns=['file', 'text', 'label'])
 			label_file = open("./NLP/nlp_model/label.txt", "r")
 			label_list = label_file.read().splitlines()
+
+			# Load list of documents that were used to train
+			train_history_dataframe = pd.read_csv("./NLP/nlp_model/train.csv")
+			new_train_history_dataframe = pd.DataFrame(list(zip(file_name_list, training_label)), columns=['file', 'label'])
+
+			# Check if there is a new label to train
+			# If there is new label, model need to be retrain from scratch
+			check_set = set(training_label)
+			retrain_flag = False
+			for check_label in check_set:
+				if check_label in label_list:
+					retrain_flag = True
+					break
+			print("Retrain: ", retrain_flag)
+
+			if retrain_flag:
+				old_name_list = [x for x in train_history_dataframe['file']]
+				old_label_list = [y for y in train_history_dataframe['label']]
+				old_text_extraction = [pdfManagement.extract_pdf(z) for z in train_history_dataframe['file']]
+				file_name_list.extend(old_name_list)
+				training_label.extend(old_label_list)
+				text_extraction.extend(old_text_extraction)
+				try:
+					os.rmdir(os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'nlp_model', 'bert_model')))
+					try:
+						os.mkdir(os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'nlp_model', 'bert_model')))
+					except OSError as e:
+						print("Error occurred when creating directory for model to save")
+				except OSError as e:
+					print("Error occurred when removing past model")
+
+			dataframe = pd.DataFrame(list(zip(file_name_list, text_extraction, training_label)), columns=['file', 'text', 'label'])
 
 			# # Load the labels first before loading model
 			bert_model = BERTModel()
@@ -61,11 +92,17 @@ def upload_train():
 
 			label_file = open("./NLP/nlp_model/label.txt", "w")
 			label_list = bert_model.label_list
-			for label in label_list:
-				label_file.write(label + "\n")
+			for in_label in label_list:
+				label_file.write(in_label + "\n")
 			label_file.close()
 
-	return render_template("home.html", labelsList=labelsList)
+			# Append current to past history and save overall history
+			train_history_dataframe = train_history_dataframe.append(new_train_history_dataframe, ignore_index=True)
+			train_history_dataframe.to_csv("./NLP/nlp_model/train.csv", encoding='utf-8', index=False)
+
+			return render_template("train.html", train_flag=True)
+
+	return render_template("train.html", train_flag=False)
 
 
 @app.route('/uploading', methods=['POST'])
