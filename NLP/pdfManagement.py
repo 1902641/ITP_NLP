@@ -1,3 +1,4 @@
+import NLP
 import os
 import PyPDF2
 from os import walk
@@ -8,7 +9,7 @@ from pdf2image.exceptions import (
     PDFSyntaxError
 )
 
-
+categoriespath = os.path.join(os.path.dirname( __file__ ), 'static', 'categories.txt')
 mypath = os.path.join(os.path.dirname( __file__ ), 'static', 'uploads')
 txtpath = os.path.join(os.path.dirname( __file__ ), 'static', 'text_extraction')
 
@@ -46,4 +47,11 @@ def pdfToTxt(filename):
     text_file.write(TextString)
     text_file.close()
     
-    
+def retrieveCategories():
+    with open(categoriespath, "r") as f:
+     list=[]
+     contents = f.readlines()
+     for line in contents:
+      list.append(line.strip())
+      print(line)
+    return list

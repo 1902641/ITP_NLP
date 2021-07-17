@@ -26,10 +26,29 @@
                     </table>
                 </div>
                 <div class="col-sm-4">
-                    <h4 class="marginLeft">Select file(s) to upload</h4>
-                    {{ dropzone.create(action=url_for('upload_file'))}}
-                    {{ dropzone.config() }}
-                    {{ dropzone.load_js() }}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h5 class="marginLeft" style="margin-top:18px;">Upload PDF</h5>
+                        </div>
+                        <div class="col-sm-2">
+                            <form action="/upload" method="POST" enctype="multipart/form-data">
+                            <div class="form-group" style="margin-right:-9px;margin-left:68%;margin: 0 -9px -5px 68%">
+                                <input style="font-family: Verdana; margin:15px; color:white; border:none;
+                                                border-radius:4px; font-size: 16px; padding:5px 10px 5px 10px; background:#FFFFFF;
+                                                background-color: #4e70ab; cursor:pointer" id="upload-btn" type = "submit" value = "Upload" >
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <meta charset="UTF-8">
+                        {{ dropzone.load_css() }}
+                        {{ dropzone.style('border: 2px dashed #4e70ab; margin: 2%; min-height: 100px;')  }}
+                        {{ dropzone.create(action='upload_file') }}
+                        {{ dropzone.load_js() }}
+                        {{ dropzone.config(custom_init='dz = this;document.getElementById("upload-btn").addEventListener("click", function handler(e) {dz.processQueue();});',
+                                custom_options='autoProcessQueue: false, addRemoveLinks: true, parallelUploads: 20,') }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,7 +73,10 @@
                     "contentType": "application/json"
                 },
                 "columns": [
-                    { "data": "PDF_Name" },
+                    { "data": "PDF_Name" ,
+        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+            $(nTd).html("<a href='http://localhost:5000/view?file="+oData.PDF_Name+"'>"+oData.PDF_Name+"</a>");
+        } },
                     { "data": "Label_Attached" },
                     { "data": "Confidence_Level" },
                     { "data": "DateOfUpload" },
