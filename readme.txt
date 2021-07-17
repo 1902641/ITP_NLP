@@ -1,3 +1,43 @@
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/1902641/ITP_NLP
+
+# Go inside the directory
+cd ITP_NLP
+
+# Checkout nlp-model-cleanup branch
+git checkout nlp-model-cleanup 
+
+# Get python 3.7 64 bits and set path in windows 10
+https://www.python.org/ftp/python/3.7.9/python-3.7.9-amd64.exe
+
+after installation, you have to make sure path is set before Microsoft store path. (might need more steps if you have multiple python versions like 2.7)
+
+# create venv (first time only) 
+python -m venv ./venv
+
+# activate venv (do this everytime you are working on the project) run `deactivate` when done
+venv/Scripts/activate
+
+# Install dependencies
+python -m pip install -r requirements.txt
+
+# Extract model
+open file explorer and navigate to ITP_NLP/NLP/nlp_model/bert_model, double click on model.ckpt-19.zip.001 and then extract.
+
+#start website
+python run.py
+
+#default port is 5000
+browse localhost:5000 in browser
+
+```
+
+
+
+
 venv/Scripts/activate
 
 pip install the following but it should be in the venv
