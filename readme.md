@@ -36,24 +36,6 @@ browse localhost:5000 in browser
 ```
 
 
-
-
-venv/Scripts/activate
-
-pip install the following but it should be in the venv
-flask
-tox - #Used to run the test suite against multiple Python versions.
-jinja2
-pdf2image
-fpdf
-conda 
-poppler
-PyPDF2
-Flask-Dropzone
-wtforms
-Flask-Excel
-tablib[pandas]
-
 The model is saved and restored using checkpoints. Due to size limitations,
 the check point data file is compressed and split into parts in the following directory:
 "NLP/nlp_model/bert_model"
