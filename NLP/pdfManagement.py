@@ -45,15 +45,19 @@ def extract_pdf(filename) -> str:
     retstr.close()
     return text
 
-def retrieveListOfPDF():
+
+def retrieveListOfPDF(ignore_list: list =[]):
     f = []
+    files = []
     text_extract = []
     for (dirpath, dirnames, filenames) in walk(mypath):
         f.extend(filenames)
         break
     for item in f:
-        text_extract.append(pdfToTxt(item))
-    return f, text_extract
+        if item not in ignore_list:
+            files.append(item)
+            text_extract.append(pdfToTxt(item))
+    return files, text_extract
 
 
 def pdfToTxt(filename):

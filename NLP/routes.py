@@ -8,6 +8,7 @@ import urllib.request, json
 import os
 from NLP.nlp_model.BERTModel import BERTModel
 import pandas as pd
+from datetime import date
 
 ALLOWED_EXTENSIONS = set(['pdf'])
 
@@ -111,78 +112,17 @@ def upload_train():
 
     return render_template("train.html", train_flag=False)
 
-
-# @app.route('/uploading', methods=['POST'])
-# def upload_file():
-#     if request.method == 'POST':
-#         # check if the post request has the files part
-#         if 'file' not in request.files:
-#             flash('No file part')
-#             return redirect(request.url)
-#         files = request.files.getlist('files[]')
-#         for file in files:
-#             if file and allowed_file(file.filename):
-#                 filename = secure_filename(file.filename)
-#                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#         flash('File(s) successfully uploaded')
-#         # -------------------------------------------------------------------
-#         # # Assuming this is where text extraction and prediction will be done
-#         # # Makeshift label list loader
-#         label_file = open("./NLP/nlp_model/label.txt", "r")
-#         label_list = label_file.read().splitlines()
-#
-#         # # Load the labels first before loading model
-#         bert_model = BERTModel()
-#         bert_model.load_label_list(label_list)
-#
-#         file_names, text_extracted = pdfManagement.retrieveListOfPDF()
-#         # Clean text for model to predict
-#         text_extracted = list(map(bert_model.clean_text, text_extracted))
-#         file_dataframe = pd.DataFrame(list(zip(file_names, text_extracted)), columns=["file", "text"])
-#         # # Optional - load or save to different directory
-#         # # If loading different models, call this before load_model()
-#         # new_directory = "./bert_model_v2"
-#         # bert_model.set_output_model_directory(new_directory)
-#         # bert_model.output_model_directory(new_directory)
-#
-#         # Call load model if configuration are done
-#         bert_model.load_model()
-#
-#         # Determine if single prediction or batch
-#         single_prediction = False
-#         if len(file_names) == 1:
-#             single_prediction = True
-#         # Map predicted results to each row in dataframe
-#         predict_results = bert_model.predict(file_dataframe['text'], single_prediction=single_prediction)
-#         result_prob = []
-#         predict_label = []
-#         predict_label_code = []
-#         for x in predict_results:
-#             result_prob.append(x[1])
-#             predict_label.append(x[3])
-#             predict_label_code.append(x[2])
-#         file_dataframe['predicted_label_code'] = predict_label_code
-#         file_dataframe['predicted_label'] = predict_label
-#         file_dataframe['probabilities'] = result_prob
-#         print(file_dataframe[['file', 'predicted_label']])
-#
-#         return redirect('/upload', labelsList=labelsList)
-
-
 @app.route('/uploading', methods=['GET', 'POST'])
 def upload_file():
     global filename
     file = None
     if request.method == "POST":
         if request.files:
-            file = request.files["file"]
-            if file.filename == "":
-                print("No filename")
-                return redirect("upload.html")
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('You were successfully logged in')
-
+            for key, f in request.files.items():
+                if key.startswith('file'):
+                    f.filename = secure_filename(f.filename)
+                    f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+                    flash('You were successfully logged in')
             # -------------------------------------------------------------------
             # # Assuming this is where text extraction and prediction will be done
             # # Makeshift label list loader
@@ -192,38 +132,46 @@ def upload_file():
             # # Load the labels first before loading model
             bert_model = BERTModel()
             bert_model.load_label_list(label_list)
-
-            file_names, text_extracted = pdfManagement.retrieveListOfPDF()
+            predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+            file_names, text_extracted = pdfManagement.retrieveListOfPDF(predict_history_dataframe['file'].tolist())
+            if len(file_names) < 1:
+                return redirect('/upload')
             # Clean text for model to predict
             text_extracted = list(map(bert_model.clean_text, text_extracted))
             file_dataframe = pd.DataFrame(list(zip(file_names, text_extracted)), columns=["file", "text"])
-            # # Optional - load or save to different directory
-            # # If loading different models, call this before load_model()
-            # new_directory = "./bert_model_v2"
-            # bert_model.set_output_model_directory(new_directory)
-            # bert_model.output_model_directory(new_directory)
-
             # Call load model if configuration are done
             bert_model.load_model()
 
             # Determine if single prediction or batch
             single_prediction = False
+            print("Length of files for predict: ", len(file_names))
             if len(file_names) == 1:
                 single_prediction = True
             # Map predicted results to each row in dataframe
-            predict_results = bert_model.predict(file_dataframe['text'], single_prediction=single_prediction)
             result_prob = []
             predict_label = []
             predict_label_code = []
-            for x in predict_results:
-                result_prob.append(x[1])
-                predict_label.append(x[3])
-                predict_label_code.append(x[2])
-            file_dataframe['predicted_label_code'] = predict_label_code
-            file_dataframe['predicted_label'] = predict_label
+            if(single_prediction):
+                predict_results = bert_model.predict(file_dataframe['text'].iloc[0], single_prediction=single_prediction)
+                result_prob.append(predict_results[1])
+                predict_label.append(predict_results[3])
+                predict_label_code.append(predict_results[2])
+            else:
+                predict_results = bert_model.predict(file_dataframe['text'], single_prediction=single_prediction)
+                for x in predict_results:
+                    result_prob.append(x[1])
+                    predict_label.append(x[3])
+                    predict_label_code.append(x[2])
+            file_dataframe['predict_label_code'] = predict_label_code
+            file_dataframe['predict_label'] = predict_label
             file_dataframe['probabilities'] = result_prob
-            print(file_dataframe[['file', 'predicted_label']])
-            return redirect("upload.html")
+            file_dataframe['manual_check'] = 'False'
+            upload_date = date.today().strftime("%d/%m/%Y")
+            file_dataframe['upload_date'] = upload_date
+            predict_history_dataframe = predict_history_dataframe.append(file_dataframe.filter(['file', 'predict_label', 'probabilities', 'predict_label_code', 'manual_check', 'upload_date'], axis=1))
+            predict_history_dataframe.to_csv("./NLP/nlp_model/predict.csv", encoding='utf-8', index=False)
+            # print(file_dataframe[['file', 'predicted_label']])
+            return redirect("/upload")
 
 
 @app.route("/label")
@@ -268,86 +216,110 @@ def stuff():
 @app.route('/upload_get_data')
 def uploadData():
     # Assume data comes from somewhere else
+    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+    prob_list = []
+    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+    confidence_list = []
+    for prob_list_item in raw_prob_list:
+        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+        prob_list.append(temp_list)
+    for probability, label_code in zip(prob_list, predicted_label_list):
+        confidence_list.append(probability[label_code].replace('\'', ''))
+    data_list = [
+        {
+            "PDF_Name": file_name,
+            "Label_Attached": predict_label,
+            "Confidence_Level": confidence,
+            "DateOfUpload": upload_date,
+            "ManualCheck": f'{manual_check}'
+        } for file_name, predict_label, confidence, upload_date, manual_check
+        in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
+               confidence_list, predict_history_dataframe['upload_date'],
+               predict_history_dataframe['manual_check'])]
     data = {
-        "data": [
-            {
-                "PDF_Name": "Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "80%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "pdf.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Search.pdf",
-                "Label_Attached": "Search",
-                "Confidence_Level": "67%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door.pdf",
-                "Label_Attached": "Door",
-                "Confidence_Level": "88%",
-                "DateOfUpload": "6/6/2021",
-                "ManualCheck": "True"
-            }]
+        "data": data_list
     }
+    # data = {
+    #     "data": [
+    #         {
+    #             "PDF_Name": "Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "80%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "pdf.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Search.pdf",
+    #             "Label_Attached": "Search",
+    #             "Confidence_Level": "67%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         },
+    #         {
+    #             "PDF_Name": "Fire Resistance Door.pdf",
+    #             "Label_Attached": "Door",
+    #             "Confidence_Level": "88%",
+    #             "DateOfUpload": "6/6/2021",
+    #             "ManualCheck": "True"
+    #         }]
+    # }
     return jsonify(data)
 
 
