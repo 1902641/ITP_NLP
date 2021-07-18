@@ -5,14 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    {{ dropzone.load_css() }}
-    <style>
+    <!-- <style>
       .dropzone {
         border: 2px dashed #0087F7;
         margin: 10%;
         min-height: 200px;
       }
-    </style>
+    </style> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
     <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
     
@@ -92,12 +91,9 @@
             <form>
               <div class="form-group">
                  <select id="choices-multiple-remove-button" placeholder="Select up to 5 tags" multiple>
-                    <option value="Door">Door</option>
-                    <option value="Bed">Bed</option>
-                    <option value="Window">Window</option>
-                    <option value="Fire Resistant Door">Fire Resistant Door</option>
-                    <option value="Fire Resistant Bed">Fire Resistant Bed</option>
-                    <option value="Shatter Resistant Window">Shatter Resistant Window</option>
+                  {% for i in categories_list %}
+                    <option name="{{ i }}" value="{{i}}">{{ i }}</option>
+                  {% endfor %}
                   </select>
             </div>
               <div class="form-group">

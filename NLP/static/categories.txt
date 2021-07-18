@@ -1,0 +1,6 @@
+Door
+Bed
+Window
+Fire Resistant Door
+Fire Resistant Bed
+Shatter Resistant Window

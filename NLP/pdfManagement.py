@@ -1,3 +1,4 @@
+import NLP
 import os
 import PyPDF2
 from os import walk
@@ -13,6 +14,7 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from io import StringIO
 
+categoriespath = os.path.join(os.path.dirname( __file__ ), 'static', 'categories.txt')
 mypath = os.path.join(os.path.dirname( __file__ ), 'static', 'uploads')
 txtpath = os.path.join(os.path.dirname( __file__ ), 'static', 'text_extraction')
 train_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'static', 'trains'))
@@ -105,4 +107,11 @@ def pdfToTxt(filename):
     # text_file.close()
     # return TextString
     
-    
+def retrieveCategories():
+    with open(categoriespath, "r") as f:
+     list=[]
+     contents = f.readlines()
+     for line in contents:
+      list.append(line.strip())
+      print(line)
+    return list
