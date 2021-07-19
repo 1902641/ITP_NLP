@@ -7,9 +7,6 @@ git clone https://github.com/1902641/ITP_NLP
 # Go inside the directory
 cd ITP_NLP
 
-# Checkout nlp-model-cleanup branch
-git checkout nlp-model-cleanup 
-
 # Get python 3.7 64 bits and set path in windows 10
 https://www.python.org/ftp/python/3.7.9/python-3.7.9-amd64.exe
 
