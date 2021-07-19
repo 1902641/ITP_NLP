@@ -183,6 +183,37 @@ def label():
 @app.route('/index_get_data')
 def stuff():
     # Assume data comes from somewhere else
+    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+    prob_list = []
+    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+    confidence_list = []
+    for prob_list_item in raw_prob_list:
+        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+        prob_list.append(temp_list)
+    for probability, label_code in zip(prob_list, predicted_label_list):
+        confidence_list.append(probability[label_code].replace('\'', ''))
+    data_list = [
+        {
+            "PDF_Name": file_name,
+            "Label_Attached": predict_label,
+            "Confidence_Level": confidence,
+            "DateOfUpload": upload_date,
+            "ManualCheck": f'{manual_check}'
+        } for file_name, predict_label, confidence, upload_date, manual_check
+        in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
+               confidence_list, predict_history_dataframe['upload_date'],
+               predict_history_dataframe['manual_check'])]
+    data = {
+        "data": data_list
+    }
+    row = []
+    for i,v in enumerate(data["data"]):
+        if v['PDF_Name']==file:
+            row=data["data"][i]
+            break
+    print(row)
+    
     data = {
         "data": [
             {
@@ -240,6 +271,7 @@ def uploadData():
     data = {
         "data": data_list
     }
+
     # data = {
     #     "data": [
     #         {
@@ -323,7 +355,7 @@ def uploadData():
     return jsonify(data)
 
 
-@app.route("/view")
+@app.route("/view2")
 def view():
     file = request.args.get('file')
     return render_template("view.html", title="View Documents", labelsList=labelsList, file=file,
@@ -335,3 +367,54 @@ def pdf():
     return render_template(
         "pdf.html", title="render Documents", categories_list=categories_list
     )
+
+@app.route('/view', methods=['GET', 'POST'])
+def verify():
+    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+    prob_list = []
+    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+    confidence_list = []
+    for prob_list_item in raw_prob_list:
+        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+        prob_list.append(temp_list)
+    for probability, label_code in zip(prob_list, predicted_label_list):
+        confidence_list.append(probability[label_code].replace('\'', ''))
+    data_list = [
+        {
+            "PDF_Name": file_name,
+            "Label_Attached": predict_label,
+            "Confidence_Level": confidence,
+            "DateOfUpload": upload_date,
+            "ManualCheck": f'{manual_check}'
+        } for file_name, predict_label, confidence, upload_date, manual_check
+        in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
+               confidence_list, predict_history_dataframe['upload_date'],
+               predict_history_dataframe['manual_check'])]
+    data = {
+        "data": data_list
+    }
+    print(data["data"][0])
+
+    file = request.args.get('file')
+    index = 0
+    found = 0
+    label_attached = ""
+    for i,v in enumerate(data["data"]):
+        if v['PDF_Name']==file:
+            print(data["data"][i+1])
+            label_attached = data["data"][i+1]["Label_Attached"]
+            confidence_level = data["data"][i+1]["Confidence_Level"]
+            index = i+1
+            found = 1
+            file=data["data"][i+1]["PDF_Name"]
+            break
+    if not found:
+        file = data["data"][0]["PDF_Name"]
+        
+    percentage = index/len(data["data"]) * 100
+    percentage = int(percentage)
+    
+
+
+    return render_template('view.html', categories_list=categories_list, file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
