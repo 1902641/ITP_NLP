@@ -377,24 +377,38 @@ def verify():
     data = {
         "data": data_list
     }
-    print(data["data"][0])
 
     file = request.args.get('file')
+    label = request.args.get('label')
+    current = 1
+    if(label == None):
+        current = 0
+    print("HERE")
+    print(label)
     index = 0
     found = 0
     label_attached = data["data"][0]["Label_Attached"]
     confidence_level = data["data"][0]["Confidence_Level"]
+    predict_history_dataframe = predict_history_dataframe.astype({"verified_label": str})
     for i,v in enumerate(data["data"]):
         if v['PDF_Name']==file:
-            print(data["data"][i+1])
-            label_attached = data["data"][i+1]["Label_Attached"]
-            confidence_level = data["data"][i+1]["Confidence_Level"]
-            index = i+1
+            print(data["data"][i+current])
+            label_attached = data["data"][i+current]["Label_Attached"]
+            confidence_level = data["data"][i+current]["Confidence_Level"]
+            index = i+current
+            predict_history_dataframe.at[i,"verified_label"] = label
+            print(label)
+            print(predict_history_dataframe.loc[[i]]["verified_label"])
+            print(predict_history_dataframe)
             found = 1
-            file=data["data"][i+1]["PDF_Name"]
+            file=data["data"][i+current]["PDF_Name"]
+
             break
     if not found:
         file = data["data"][0]["PDF_Name"]
+    #print(predict_history_dataframe.at[i, 'verified_label'])
+    predict_history_dataframe.to_csv("./NLP/nlp_model/predict.csv", encoding='utf-8', index=False)
+
         
     percentage = index/len(data["data"]) * 100
     percentage = int(percentage)

@@ -23,13 +23,14 @@
             <div class="row">
                 <div class="col-sm-6">
                     <p>Suggested Label</p>
-                    <p>Selected Label</p>
+					<!--     <p>Selected Label</p> -->
+					<br>
                     <p>CL for Suggested Label</p>
 					<!--		<p>Number of test cases</p> -->
                 </div>
                 <div class="col-sm-6">
 					<p>{{label_attached}}</p>
-					<p>{{label_attached}}</p>
+					<!--	<p>{{label_attached}}</p> -->
 					<p>{{confidence_level}}</p>
 					<!--  <p>28</p> -->
                 </div>
@@ -60,7 +61,7 @@
             <div class="col-sm-6" style="margin-left: 73px;">
                 <div class="btn-group" role="group" aria-label="Basic example">
                     <button type="button" class="btn btn-secondary btn-clear">Clear</button>
-					<form action="/view?file={{file}}" method="post">
+					<form action="/view?file={{file}}&label={{label_attached}}" method="post">
                     	<button type="submit" class="btn btn-secondary btn-verify">Verify</button>
 					</form>
                 </div>
@@ -97,7 +98,7 @@
                 </div>
             </form>
             <div class="modal-footer">
-				<a href="{{ url_for('view')}}"><button type="submit" class="btn btn-primary">Submit</button></a>
+				<a href="{{ url_for('verify')}}"><button type="submit" class="btn btn-primary">Submit</button></a>
             </div>
         </div>
     </div>
@@ -117,7 +118,10 @@
                     "contentType": "application/json"
                 },
                 "columns": [
-                    { "data": "PDF_Name" },
+                    { "data": "PDF_Name" ,
+			"fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+				$(nTd).html("<a href='http://localhost:5000/view?file="+"{{file}}"+ "&label=" + oData.PDF_Name +"'>"+oData.PDF_Name+"</a>");
+        } },
                     { "data": "Confidence_Level" }
                 ],
 				"order": [[1, "desc" ]],
