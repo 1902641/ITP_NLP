@@ -183,6 +183,7 @@ def label():
 @app.route('/index_get_data')
 def stuff():
     # Assume data comes from somewhere else
+    file = request.args.get('file')
     predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
     raw_prob_list = predict_history_dataframe['probabilities'].tolist()
     prob_list = []
@@ -207,41 +208,30 @@ def stuff():
     data = {
         "data": data_list
     }
-    row = []
+    predic = predict_history_dataframe["probabilities"].tolist()
+    row = 0
     for i,v in enumerate(data["data"]):
         if v['PDF_Name']==file:
-            row=data["data"][i]
+            row=i
             break
-    print(row)
+    a_file = open("./NLP/nlp_model/label.txt")
+    file_contents = a_file.read()
+    label_headings = file_contents.splitlines()
+    data2 = []
+    probability_array = predic[row][1:-1].split(",")
+    for i in range(len(label_headings)):
+        temp_dict = {}
+        temp_dict["PDF_Name"] = label_headings[i]
+        temp_dict["Confidence_Level"] = probability_array[i]
+        data2.append(temp_dict)
+
     
-    data = {
-        "data": [
-            {
-                "PDF_Name": "Door",
-                "Confidence_Level": "50%"
-            },
-            {
-                "PDF_Name": "Fire Resistance Door",
-                "Confidence_Level": "30%"
-            },
-            {
-                "PDF_Name": "Fire Resistance Bed",
-                "Confidence_Level": "29%"
-            },
-            {
-                "PDF_Name": "Wooden Bedframe",
-                "Confidence_Level": "8%"
-            },
-            {
-                "PDF_Name": "Bed",
-                "Confidence_Level": "4%"
-            },
-            {
-                "PDF_Name": "Water Resistance Bed",
-                "Confidence_Level": "2%"
-            }]
+    data2 = {
+        "data": data2
     }
-    return jsonify(data)
+
+
+    return jsonify(data2)
 
 
 @app.route('/upload_get_data')
@@ -271,6 +261,7 @@ def uploadData():
     data = {
         "data": data_list
     }
+
 
     # data = {
     #     "data": [
@@ -321,8 +312,7 @@ def uploadData():
     #             "Label_Attached": "Door",
     #             "Confidence_Level": "88%",
     #             "DateOfUpload": "6/6/2021",
-    #             "ManualCheck": "True"
-    #         },
+    #             "ManualCheck": "True" },
     #         {
     #             "PDF_Name": "Fire Resistance Door.pdf",
     #             "Label_Attached": "Door",
@@ -353,13 +343,6 @@ def uploadData():
     #         }]
     # }
     return jsonify(data)
-
-
-@app.route("/view2")
-def view():
-    file = request.args.get('file')
-    return render_template("view.html", title="View Documents", labelsList=labelsList, file=file,
-                           categories_list=categories_list)
 
 
 @app.route("/pdf")
@@ -399,7 +382,8 @@ def verify():
     file = request.args.get('file')
     index = 0
     found = 0
-    label_attached = ""
+    label_attached = data["data"][0]["Label_Attached"]
+    confidence_level = data["data"][0]["Confidence_Level"]
     for i,v in enumerate(data["data"]):
         if v['PDF_Name']==file:
             print(data["data"][i+1])
@@ -417,4 +401,4 @@ def verify():
     
 
 
-    return render_template('view.html', categories_list=categories_list, file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
+    return render_template('view.html', categories_list=categories_list, labelsList=labelsList,file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
