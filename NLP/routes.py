@@ -20,6 +20,8 @@ def allowed_file(filename):
 categories_list = pdfManagement.retrieveCategories()
 
 labelsList = csvReader.readCSV()
+label_file = open("./NLP/nlp_model/label.txt", "r")
+categories_list = label_file.read().splitlines()
 
 
 @app.route("/")
@@ -393,6 +395,8 @@ def verify():
     predict_history_dataframe = predict_history_dataframe.astype({"verified_label": str})
     for i,v in enumerate(data["data"]):
         if v['PDF_Name']==file:
+            if current == 1 and i+1 == len(data["data"]):
+                break
             print(data["data"][i+current])
             label_attached = data["data"][i+current]["Label_Attached"]
             confidence_level = data["data"][i+current]["Confidence_Level"]
