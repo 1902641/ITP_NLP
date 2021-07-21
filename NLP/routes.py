@@ -253,11 +253,12 @@ def uploadData():
             "Label_Attached": predict_label,
             "Confidence_Level": confidence,
             "DateOfUpload": upload_date,
-            "ManualCheck": f'{manual_check}'
-        } for file_name, predict_label, confidence, upload_date, manual_check
+            "ManualCheck": f'{manual_check}',
+            "VerifiedLabel": str(verified_label),
+        } for file_name, predict_label, confidence, upload_date, manual_check, verified_label
         in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
                confidence_list, predict_history_dataframe['upload_date'],
-               predict_history_dataframe['manual_check'])]
+               predict_history_dataframe['manual_check'], predict_history_dataframe['verified_label'])]
     data = {
         "data": data_list
     }
@@ -397,8 +398,8 @@ def verify():
             confidence_level = data["data"][i+current]["Confidence_Level"]
             index = i+current
             predict_history_dataframe.at[i,"verified_label"] = label
+            predict_history_dataframe.at[i,"manual_check"] = True
             print(label)
-            print(predict_history_dataframe.loc[[i]]["verified_label"])
             print(predict_history_dataframe)
             found = 1
             file=data["data"][i+current]["PDF_Name"]
