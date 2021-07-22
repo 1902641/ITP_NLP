@@ -396,7 +396,8 @@ def verify():
     for i,v in enumerate(data["data"]):
         if v['PDF_Name']==file:
             if current == 1 and i+1 == len(data["data"]):
-                break
+                return render_template('upload.html', categories_list=categories_list)
+
             print(data["data"][i+current])
             label_attached = data["data"][i+current]["Label_Attached"]
             confidence_level = data["data"][i+current]["Confidence_Level"]
