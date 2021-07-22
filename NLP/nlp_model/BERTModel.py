@@ -117,7 +117,7 @@ class BERTModel(NLPModel):
         print(test_labels)
         # Preprocess the text by cleaning the text fit for reading by model
         self.dataframe['text'] = self.dataframe['text'].apply(self.clean_text)
-        self.dataframe['text'] = self.dataframe['text'].str.replace('\d+', '')
+        # self.dataframe['text'] = self.dataframe['text'].str.replace('\d+', '')
         self.dataframe['text_split'] = self.dataframe['text'].apply(self.split_text)
 
     def train(self):
@@ -187,6 +187,8 @@ class BERTModel(NLPModel):
         SAVE_SUMMARY_STEPS = 80
 
         num_train_steps = int(len(train_features) / BATCH_SIZE * NUM_TRAIN_EPOCHS)
+        if num_train_steps == 0:
+            num_train_steps = 1
         num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
         sess_config = tf.ConfigProto()
         sess_config.gpu_options.allow_growth = True
@@ -365,6 +367,8 @@ class BERTModel(NLPModel):
         return model_function
 
     def predict(self,in_sentences, single_prediction=False):
+        print("Beginning to predict...")
+        current_time = datetime.now()
         # A list to map the actual labels to the predictions
         labels = self.numeric_label_list
         # train_input = train_set.apply(lambda x: run_classifier.InputExample(guid=None,
@@ -382,6 +386,7 @@ class BERTModel(NLPModel):
         predict_input_fn = run_classifier.input_fn_builder(features=input_features, seq_length=self.MAX_SEQ_LENGTH,
                                                            is_training=False, drop_remainder=False)
         predictions = self.estimator.predict(predict_input_fn, yield_single_examples=not single_prediction)
+        print("Total predicting time : ", datetime.now() - current_time)
         if single_prediction:
             prediction = next(predictions)
             return [in_sentences, [f'{x*100:0.2f}%' for x in np.exp(prediction['probabilities'])[0]], prediction['labels'], self.label_list[prediction['labels']], np.exp(prediction['probabilities']).sum()]

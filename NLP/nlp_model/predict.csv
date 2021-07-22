@@ -1,14 +1,21 @@
 file,predict_label,probabilities,predict_label_code,manual_check,upload_date,verified_label
-Allegion-_CF5512.pdf,steelwork protection / intumescent coatings,"['4.97%', '6.25%', '5.09%', '7.18%', '3.66%', '3.36%', '3.77%', '2.40%', '3.96%', '29.13%', '26.63%', '3.61%']",9,True,18/07/2021,steelwork protection / intumescent coatings
-CF5974_Altro_Ltd_-_501405.pdf,timber door,"['5.75%', '4.73%', '4.05%', '4.59%', '3.80%', '3.16%', '5.23%', '5.19%', '7.09%', '18.27%', '31.83%', '6.33%']",10,True,18/07/2021,timber door
-Flask_Guide.pdf,timber door,"['7.46%', '4.99%', '5.99%', '7.90%', '4.22%', '2.61%', '3.83%', '3.93%', '5.39%', '20.69%', '27.52%', '5.47%']",10,True,18/07/2021,timber door
-Lect_5_-_Revision.pdf,steelwork protection / intumescent coatings,"['6.41%', '7.70%', '7.02%', '6.33%', '2.87%', '2.68%', '4.29%', '3.92%', '6.11%', '24.64%', '22.32%', '5.71%']",9,True,18/07/2021,steelwork protection / intumescent coatings
-OLD_-_CAF187_Concept_Doors_Limited.pdf,steelwork protection / intumescent coatings,"['6.81%', '4.38%', '4.94%', '5.72%', '2.64%', '2.64%', '2.13%', '3.95%', '6.44%', '31.06%', '25.28%', '4.03%']",9,True,18/07/2021,steelwork protection / intumescent coatings
-OLD_CAF5008_Pendle_Doors_Ltd.pdf,timber door,"['6.33%', '4.22%', '4.78%', '5.37%', '3.35%', '3.66%', '4.15%', '3.91%', '6.41%', '26.16%', '28.67%', '3.01%']",10,True,18/07/2021,timber door
-pdf.pdf,steelwork protection / intumescent coatings,"['5.32%', '6.05%', '4.46%', '6.72%', '3.64%', '4.58%', '3.39%', '6.29%', '4.57%', '30.67%', '18.28%', '6.03%']",9,True,18/07/2021,steelwork protection / intumescent coatings
-Rebranded_CF218_Vicaima_Limited_18.11.2020.pdf,steelwork protection / intumescent coatings,"['5.40%', '5.53%', '2.81%', '4.52%', '4.48%', '2.86%', '4.09%', '4.50%', '7.67%', '30.84%', '23.15%', '4.13%']",9,True,18/07/2021,timber door
-Assa_Abloy_Security_CF5701.pdf,steelwork protection / intumescent coatings,"['4.29%', '5.70%', '4.60%', '5.40%', '3.60%', '4.50%', '5.13%', '4.57%', '6.72%', '25.45%', '24.98%', '5.06%']",9,True,18/07/2021,steelwork protection / intumescent coatings
-CAF121_Hollways_Doors_-346638.pdf,timber door,"['3.86%', '5.73%', '4.69%', '4.53%', '2.94%', '2.32%', '2.92%', '3.44%', '4.22%', '28.88%', '32.04%', '4.44%']",10,True,18/07/2021,timber door
-CAF144_Brian_Fell.pdf,steelwork protection / intumescent coatings,"['3.85%', '4.62%', '4.38%', '3.87%', '4.06%', '2.37%', '3.75%', '2.24%', '4.84%', '35.31%', '26.09%', '4.62%']",9,True,18/07/2021,steelwork protection / intumescent coatings
-CAF154_European_Door_Sets.pdf,timber door,"['6.92%', '6.79%', '8.77%', '5.54%', '2.82%', '3.75%', '3.98%', '5.08%', '6.24%', '21.69%', '24.45%', '3.96%']",10,True,18/07/2021,timber door
-SE_7_Plan.pdf,timber door,"['8.74%', '6.05%', '5.06%', '6.42%', '4.98%', '3.18%', '5.74%', '5.64%', '4.97%', '20.45%', '23.11%', '5.65%']",10,False,19/07/2021,nan
+CAF121_Hollways_Doors_-346638.pdf,timber door,"['28.23%', '71.77%']",1,True,22/07/2021,timber door
+CAF5061_Solutions_In_Wood_-_428692.pdf,timber door,"['34.07%', '65.93%']",1,True,22/07/2021,timber door
+CF192_Jeld-Wen_UK_-_414824.pdf,timber door,"['49.66%', '50.34%']",1,True,22/07/2021,timber door
+CF380_Premdor_Crosby.pdf,timber door,"['41.26%', '58.74%']",1,True,22/07/2021,timber door
+CF384_Sherwin_Williams.pdf,steelwork protection / intumescent coatings,"['53.46%', '46.54%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5170_Jotun_AS_-_429612.pdf,steelwork protection / intumescent coatings,"['52.07%', '47.93%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5229_Doorpac_Ltd.pdf,steelwork protection / intumescent coatings,"['50.42%', '49.58%']",0,True,22/07/2021,timber door
+CF5260_Pacific_Rim_Extension.pdf,timber door,"['43.72%', '56.28%']",1,True,22/07/2021,timber door
+CF5267_Sherwin_Williams.pdf,steelwork protection / intumescent coatings,"['58.26%', '41.74%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5276_Jotun_-_413464.pdf,steelwork protection / intumescent coatings,"['54.79%', '45.21%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5439_IDSL_Extension.pdf,timber door,"['42.39%', '57.61%']",1,True,22/07/2021,timber door
+CF5474_Jotun_Abu_Dhab.pdf,steelwork protection / intumescent coatings,"['62.61%', '37.39%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5533_Newmor_Group_Morland_UK_-_433566.pdf,steelwork protection / intumescent coatings,"['55.27%', '44.73%']",0,True,22/07/2021,timber door
+CF5591_Carboline_Company.pdf,steelwork protection / intumescent coatings,"['54.77%', '45.23%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5593_Multifire.pdf,steelwork protection / intumescent coatings,"['57.69%', '42.31%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5601_KCC.pdf,steelwork protection / intumescent coatings,"['55.88%', '44.12%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF5870_Decor_Ireland_-_428442.pdf,steelwork protection / intumescent coatings,"['51.35%', '48.65%']",0,True,22/07/2021,steelwork protection / intumescent coatings
+CF625_Premdor.pdf,timber door,"['48.06%', '51.94%']",1,True,22/07/2021,timber door
+CF632_Norma_Doors.....pdf,steelwork protection / intumescent coatings,"['61.45%', '38.55%']",0,True,22/07/2021,timber door
+CF700_Rudlof_Hensel.pdf,steelwork protection / intumescent coatings,"['55.32%', '44.68%']",0,True,22/07/2021,

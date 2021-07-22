@@ -9,6 +9,7 @@ import os
 from NLP.nlp_model.BERTModel import BERTModel
 import pandas as pd
 from datetime import date
+import shutil
 
 ALLOWED_EXTENSIONS = set(['pdf'])
 
@@ -70,10 +71,13 @@ def upload_train():
             # If there is new label, model need to be retrain from scratch
             check_set = set(training_label)
             retrain_flag = False
-            for check_label in check_set:
-                if check_label in label_list:
-                    retrain_flag = True
-                    break
+            if len(check_set) == 0:
+                retrain_flag = True
+            else:
+                for check_label in check_set:
+                    if check_label not in label_list:
+                        retrain_flag = True
+                        break
             print("Retrain: ", retrain_flag)
 
             if retrain_flag:
@@ -84,13 +88,16 @@ def upload_train():
                 training_label.extend(old_label_list)
                 text_extraction.extend(old_text_extraction)
                 try:
-                    os.rmdir(os.path.abspath(os.path.join(os.path.dirname(__file__), 'nlp_model', 'bert_model')))
+                    shutil.rmtree(os.path.abspath(os.path.join(os.path.dirname(__file__), 'nlp_model', 'bert_model')),
+                                  ignore_errors=True)
                     try:
                         os.mkdir(os.path.abspath(os.path.join(os.path.dirname(__file__), 'nlp_model', 'bert_model')))
                     except OSError as e:
                         print("Error occurred when creating directory for model to save")
+                        print(e.strerror)
                 except OSError as e:
                     print("Error occurred when removing past model")
+                    print(e.strerror)
 
             dataframe = pd.DataFrame(list(zip(file_name_list, text_extraction, training_label)),
                                      columns=['file', 'text', 'label'])
@@ -153,6 +160,7 @@ def upload_file():
             result_prob = []
             predict_label = []
             predict_label_code = []
+            print(file_dataframe.head())
             if(single_prediction):
                 predict_results = bert_model.predict(file_dataframe['text'].iloc[0], single_prediction=single_prediction)
                 result_prob.append(predict_results[1])
@@ -173,7 +181,7 @@ def upload_file():
             predict_history_dataframe = predict_history_dataframe.append(file_dataframe.filter(['file', 'predict_label', 'probabilities', 'predict_label_code', 'manual_check', 'upload_date'], axis=1))
             predict_history_dataframe.to_csv("./NLP/nlp_model/predict.csv", encoding='utf-8', index=False)
             # print(file_dataframe[['file', 'predicted_label']])
-            return redirect("/upload")
+            return redirect(url_for('upload_form'))
 
 
 @app.route("/label")
