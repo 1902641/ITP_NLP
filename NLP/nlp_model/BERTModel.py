@@ -45,6 +45,7 @@ class BERTModel(NLPModel):
         self.LOAD_DIR = './saved_model/1623831954'
         self.full_dataframe = pd.DataFrame()
         self.dataframe = pd.DataFrame()
+        self.val_dataframe = pd.DataFrame()
         self.numeric_label_list = []
         self.label_list = []
         self.estimator = tf.estimator.Estimator
@@ -70,7 +71,7 @@ class BERTModel(NLPModel):
         Model must be loaded via an existing model directory prior to calling this function
         """
 
-        BATCH_SIZE = 6
+        BATCH_SIZE = 4
         LEARNING_RATE = 2e-5
         NUM_TRAIN_EPOCHS = 1.0
         WARMUP_PROPORTION = 0.1
@@ -92,11 +93,12 @@ class BERTModel(NLPModel):
                                                 config=run_config,
                                                 params={"batch_size": BATCH_SIZE})
 
-    def fit(self, dataframe: pd.DataFrame, in_labels: list):
+    def fit(self, dataframe: pd.DataFrame, val_dataframe: pd.DataFrame, in_labels: list):
         """
         Insert training dataframe to model
         """
         self.full_dataframe = dataframe
+        self.val_dataframe = val_dataframe
         self.dataframe = self.full_dataframe.filter(['file', 'text', 'label'], axis=1)
         # self.numeric_label_list = [x for x in np.unique(self.dataframe.label)]
         # Convert labels to be numeric for the model to classify
@@ -107,23 +109,22 @@ class BERTModel(NLPModel):
                 self.label_list.append(label)
         self.label_encoder.fit(self.label_list)
         self.trained_length = len(self.label_list)
-        test_labels = [x for x in np.unique(self.dataframe.label)]
-        print('test labels: ...')
-        print(test_labels)
         self.numeric_label_list = self.label_encoder.transform(self.label_list)
         self.dataframe['label'] = self.label_encoder.transform(self.dataframe['label'])
-        test_labels = [x for x in np.unique(self.dataframe.label)]
-        print('test labels: ...')
-        print(test_labels)
+        self.val_dataframe['label'] = self.label_encoder.transform(self.val_dataframe['label'])
         # Preprocess the text by cleaning the text fit for reading by model
         self.dataframe['text'] = self.dataframe['text'].apply(self.clean_text)
+        self.val_dataframe['text'] = self.val_dataframe['text'].apply(self.clean_text)
         # self.dataframe['text'] = self.dataframe['text'].str.replace('\d+', '')
         self.dataframe['text_split'] = self.dataframe['text'].apply(self.split_text)
+        self.val_dataframe['text_split'] = self.val_dataframe['text'].apply(self.split_text)
 
     def train(self):
         # Split into training and validation
-        train_set, validation_set = train_test_split(self.dataframe, test_size=0.1, random_state=35)
-        train_set.reset_index(drop=True, inplace=True)
+        # train_set, validation_set = train_test_split(self.dataframe, test_size=0.8, random_state=25)
+        # train_set.reset_index(drop=True, inplace=True)
+        train_set = self.dataframe
+        validation_set = self.val_dataframe
 
         label_list = [x for x in np.unique(train_set.label)]
         print("Self label list: ")
@@ -179,7 +180,7 @@ class BERTModel(NLPModel):
         validation_features = run_classifier.convert_examples_to_features(validation_input, label_list, self.MAX_SEQ_LENGTH,
                                                                           self.tokenizer)
 
-        BATCH_SIZE = 6
+        BATCH_SIZE = 4
         LEARNING_RATE = 2e-5
         NUM_TRAIN_EPOCHS = 1.0
         WARMUP_PROPORTION = 0.1

@@ -39,13 +39,17 @@ def upload_form():
 def upload_train():
     print("Request sent here")
     if request.method == 'POST':
-        if request.files['files'].filename != '' and request.files['labels'].filename != '':
+        if request.files['files'].filename != '' and request.files['val_files'].filename != '' and request.files['labels'].filename != '':
             files = request.files.getlist('files')
+            val_files = request.files.getlist('val_files')
             training_dataframe = pd.read_csv(request.files.get('labels'))
             training_dataframe = training_dataframe.iloc[:, 1:]
             file_name_list = []
             training_label = []
             text_extraction = []
+            val_file_name_list = []
+            val_training_label = []
+            val_text_extract = []
             print("files uploaded")
             for file in files:
                 if file and allowed_file(file.filename):
@@ -59,6 +63,18 @@ def upload_train():
                     text_extraction.append(pdfManagement.extract_pdf(file.filename))
                 else:
                     print('file saved failed')
+            for val_file in val_files:
+                if val_file and allowed_file(val_file.filename):
+                    filename = secure_filename(val_file.filename)
+                    val_file.save(os.path.join(app.config['TRAIN_FOLDER'], filename))
+                    print(val_file.filename, ' file saved')
+                    val_file_name_list.append(val_file.filename)
+                    found_label = training_dataframe[
+                        training_dataframe['filepath'].str.contains(val_file.filename, case=False, regex=False)]
+                    val_training_label.append(found_label['ProductTypeCode'].iloc[0])
+                    val_text_extract.append(pdfManagement.extract_pdf(val_file.filename))
+                else:
+                    print('file saved failed')
             label_file = open("./NLP/nlp_model/label.txt", "r")
             label_list = label_file.read().splitlines()
 
@@ -66,7 +82,6 @@ def upload_train():
             train_history_dataframe = pd.read_csv("./NLP/nlp_model/train.csv")
             new_train_history_dataframe = pd.DataFrame(list(zip(file_name_list, training_label)),
                                                        columns=['file', 'label'])
-
             # Check if there is a new label to train
             # If there is new label, model need to be retrain from scratch
             check_set = set(training_label)
@@ -102,9 +117,11 @@ def upload_train():
             dataframe = pd.DataFrame(list(zip(file_name_list, text_extraction, training_label)),
                                      columns=['file', 'text', 'label'])
 
+            val_dataframe = pd.DataFrame(list(zip(val_file_name_list, val_text_extract, val_training_label)),
+                                                columns=['file', 'text', 'label'])
             # # Load the labels first before loading model
             bert_model = BERTModel()
-            bert_model.fit(dataframe=dataframe, in_labels=label_list)
+            bert_model.fit(dataframe=dataframe, val_dataframe=val_dataframe, in_labels=label_list)
             bert_model.train()
 
             label_file = open("./NLP/nlp_model/label.txt", "w")
