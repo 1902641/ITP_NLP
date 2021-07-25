@@ -1,10 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div style="padding-top:8%; background:rgba(255,255,255, 0.6);">
-        <div class="container" style="padding:20px;">
-            <div class="row marginLeft">
-                <div class="col-lg">
-                    <table id="example" class="display " style="width:100%">
+<style>
+    .upload_btn:hover{
+        filter:  brightness(1.1);
+    }
+</style>
+    <div style="padding-top:8%; background:rgba(255,255,255, 0.6);margin-right:-100px;">
+        <div class="container" style="padding-top:20px;width:150%;">
+            <div class="row">
+                <div class="col-lg-10">
+                    <table id="example" class="display">
                         <thead>
                             <tr>                                
                                 <th>PDF Name</th>
@@ -27,17 +32,17 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-lg-2" style="margin-top:-15px;">
                     <div class="row">
-                        <div class="col-sm-6">
-                            <h5 class="marginLeft" style="margin-top:18px;">Upload PDF</h5>
+                        <div class="col-lg-8">
+                            <h5 style="margin-top:15px;margin-left: -15%;">Upload PDF</h5>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-lg-2">
 {#                            <form action="/upload" method="POST" enctype="multipart/form-data">#}
-                            <div class="form-group" style="margin-right:-9px;margin-left:68%;margin: 0 -9px -5px 68%">
-                                <input style="font-family: Verdana; margin:15px; color:white; border:none;
-                                                border-radius:4px; font-size: 16px; padding:5px 10px 5px 10px; background:#FFFFFF;
-                                                background-color: #4e70ab; cursor:pointer" id="upload-btn" type = "submit" value = "Upload" >
+                            <div class="form-group" style="margin: 0 -5px -0px 5px">
+                                <input class="upload_btn" style="font-family: Verdana;margin-top:14px;margin-left:-29px; color:#265286; border:none;
+                                                border-radius:4px; font-size: 14px; padding:5px 10px 5px 10px;
+                                                background-color:#95D1F3;; cursor:pointer" id="upload-btn" type = "submit" value = "Upload" >
                             </div>
 {#                        </form>#}
                         </div>
@@ -45,7 +50,7 @@
                     <div class="row">
                         <meta charset="UTF-8">
                         {{ dropzone.load_css() }}
-                        {{ dropzone.style('border: 2px dashed #4e70ab; margin: 2%; min-height: 100px;')  }}
+                        {{ dropzone.style('border: 2px dashed #4e70ab; margin: 2%; min-height: 80px;')  }}
                         {{ dropzone.create(action='upload_file') }}
                         {{ dropzone.load_js() }}
                         {{ dropzone.config(custom_init='dz = this;document.getElementById("upload-btn").addEventListener("click", function handler(e) {dz.processQueue();});',
