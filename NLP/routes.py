@@ -447,3 +447,85 @@ def verify():
 
 
     return render_template('view.html', categories_list=categories_list, labelsList=labelsList,file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
+
+
+@app.route("/trained_stats")
+def trained_stats():
+    a_file = open("./NLP/nlp_model/label.txt")
+    file_contents = a_file.read()
+    label_headings = file_contents.splitlines()
+    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+    prob_list = []
+    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+    confidence_list = []
+    for prob_list_item in raw_prob_list:
+        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+        prob_list.append(temp_list)
+    for probability, label_code in zip(prob_list, predicted_label_list):
+        confidence_list.append(probability[label_code].replace('\'', ''))
+    data_list = [
+        {
+            "PDF_Name": file_name,
+            "Label_Attached": predict_label,
+            "Confidence_Level": confidence,
+            "DateOfUpload": upload_date,
+            "ManualCheck": f'{manual_check}'
+        } for file_name, predict_label, confidence, upload_date, manual_check
+        in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
+               confidence_list, predict_history_dataframe['upload_date'],
+               predict_history_dataframe['manual_check'])]
+
+    headings_count = {}
+    for i in data_list:
+        if i["Label_Attached"] in headings_count:
+            headings_count[i["Label_Attached"]] += 1
+        else:
+            headings_count[i["Label_Attached"]] = 1
+    
+    data = []
+    for key in headings_count:
+        data.append({ "name":key,"y":headings_count[key]})
+
+    return jsonify(data)
+
+@app.route("/verified_stats")
+def verified_stats():
+    a_file = open("./NLP/nlp_model/label.txt")
+    file_contents = a_file.read()
+    label_headings = file_contents.splitlines()
+    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+    prob_list = []
+    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+    confidence_list = []
+    for prob_list_item in raw_prob_list:
+        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+        prob_list.append(temp_list)
+    for probability, label_code in zip(prob_list, predicted_label_list):
+        confidence_list.append(probability[label_code].replace('\'', ''))
+    data_list = [
+        {
+            "PDF_Name": file_name,
+            "Label_Attached": predict_label,
+            "Confidence_Level": confidence,
+            "DateOfUpload": upload_date,
+            "ManualCheck": f'{manual_check}',
+            "VerifiedLabel": str(verified_label),
+        } for file_name, predict_label, confidence, upload_date, manual_check, verified_label
+        in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
+               confidence_list, predict_history_dataframe['upload_date'],
+               predict_history_dataframe['manual_check'], predict_history_dataframe['verified_label'])]
+    headings_count = {}
+    for i in data_list:
+        if i["VerifiedLabel"] in headings_count:
+            headings_count[i["VerifiedLabel"]] += 1
+        else:
+            headings_count[i["VerifiedLabel"]] = 1
+    
+    data = []
+    for key in headings_count:
+        data.append({ "name":key,"y":headings_count[key]})
+
+    return jsonify(data)
+

@@ -1,4 +1,137 @@
 {% extends "layout.html" %}
 {% block content %}
     
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <div style="padding-top:8%; background:rgba(255,255,255, 0.6);">
+        <div class="container2" style="padding:20px;">
+            <div class="row marginLeft">
+                <div class="col-lg">
+					<figure class="highcharts-figure">
+    <div id="container223"></div>
+    <div id="container222"></div>
+    <p class="highcharts-description">
+    </p>
+</figure>
+
+
+				</div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <h1>
+                {% if title %}
+                    <title>NLP Labeller - {{ title }}</title>
+                {% else %}
+                    <title>NLP Labeller</title>
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    var options = {
+        chart: {
+            type: 'spline'
+        },
+        series: [{}]
+    };
+    $.ajax({  
+        url: '/trained_stats',  
+        success: function(data) {
+            //options.series[0].data = data;
+            //Highcharts.Chart('container', options);
+		Highcharts.chart('container222', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Prediction of Labels'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
+    },
+    series: [{
+        name: 'Classification',
+        colorByPoint: true,
+        data: data
+    }]
+});
+
+        }  
+    });
+	  var options = {
+        chart: {
+            type: 'spline'
+        },
+        series: [{}]
+    };
+    $.ajax({  
+        url: '/verified_stats',  
+        success: function(data) {
+            //options.series[0].data = data;
+            //Highcharts.Chart('container', options);
+		Highcharts.chart('container223', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Manual Labels'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
+    },
+    series: [{
+        name: 'Classification',
+        colorByPoint: true,
+        data: data
+    }]
+});
+
+        }  
+    });
+
+});
+
+		</script>
+
 {% endblock content %}
