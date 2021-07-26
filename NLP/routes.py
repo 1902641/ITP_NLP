@@ -535,3 +535,45 @@ def verified_stats():
 
     return jsonify(data)
 
+@app.route("/accuracy_stats")
+def accuracy_stats():
+    a_file = open("./NLP/nlp_model/label.txt")
+    file_contents = a_file.read()
+    label_headings = file_contents.splitlines()
+    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+    prob_list = []
+    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+    confidence_list = []
+    for prob_list_item in raw_prob_list:
+        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+        prob_list.append(temp_list)
+    for probability, label_code in zip(prob_list, predicted_label_list):
+        confidence_list.append(probability[label_code].replace('\'', ''))
+    data_list = [
+        {
+            "PDF_Name": file_name,
+            "Label_Attached": predict_label,
+            "Confidence_Level": confidence,
+            "DateOfUpload": upload_date,
+            "ManualCheck": f'{manual_check}',
+            "VerifiedLabel": str(verified_label),
+        } for file_name, predict_label, confidence, upload_date, manual_check, verified_label
+        in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
+               confidence_list, predict_history_dataframe['upload_date'],
+               predict_history_dataframe['manual_check'], predict_history_dataframe['verified_label'])]
+    headings_count = {}
+    total_verified_docs = 0
+    total_matched_docs = 0
+    for i in data_list:
+        if i["VerifiedLabel"] != "nan":
+            total_verified_docs += 1
+            if i["VerifiedLabel"] == i["Label_Attached"]:
+                total_matched_docs += 1
+
+    
+    data = []
+    data = { "matched":total_matched_docs,"total": total_verified_docs}
+
+    return jsonify(data)
+

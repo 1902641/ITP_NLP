@@ -12,6 +12,7 @@
 					<figure class="highcharts-figure">
     <div id="container223"></div>
     <div id="container222"></div>
+    <div id="container224"></div>
     <p class="highcharts-description">
     </p>
 </figure>
@@ -130,8 +131,42 @@ document.addEventListener('DOMContentLoaded', function () {
         }  
     });
 
-});
 
+    $.ajax({  
+        url: '/accuracy_stats',  
+        success: function(data) {
+            //options.series[0].data = data;
+            //Highcharts.Chart('container', options);
+			const chart = Highcharts.chart('container224', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Accuracy'
+            },
+            xAxis: {
+                categories: ['Documents']
+            },
+            yAxis: {
+                title: {
+                    text: 'accuracy'
+                }
+            },
+            series: [{
+                name: 'Correct label',
+                data: [data.matched]
+            }, {
+                name: 'Total label',
+                data: [data.total]
+            }]
+        });
+
+        }  
+    });
+
+
+
+});
 		</script>
 
 {% endblock content %}
