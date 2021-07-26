@@ -9,6 +9,9 @@
         <div class="container" style="padding-top:20px;width:150%;">
             <div class="row">
                 <div class="col-lg-10">
+                    <div>
+                        <a class="btn btn-secondary mb-2" href="{{ url_for('export_csv') }}">Export as CSV</a>
+                    </div>
                     <table id="example" class="display">
                         <thead>
                             <tr>                                
@@ -53,8 +56,8 @@
                         {{ dropzone.style('border: 2px dashed #4e70ab; margin: 2%; min-height: 80px;')  }}
                         {{ dropzone.create(action='upload_file') }}
                         {{ dropzone.load_js() }}
-                        {{ dropzone.config(custom_init='dz = this;document.getElementById("upload-btn").addEventListener("click", function handler(e) {dz.processQueue();});',
-                                custom_options='autoProcessQueue: false, addRemoveLinks: true, parallelUploads: 20,') }}
+                        {{ dropzone.config(custom_init='dz = this;document.getElementById("upload-btn").addEventListener("click", function handler(e) {dz.processQueue();});dz.on("completed", function (file) {location.reload();});',
+                                custom_options='autoProcessQueue: false, addRemoveLinks: true, parallelUploads: 20,', redirect_url=url_for('upload_form')) }}
                     </div>
                 </div>
             </div>

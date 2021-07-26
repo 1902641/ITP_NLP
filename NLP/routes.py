@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from NLP import app, pdfManagement, csvReader
 import flask_excel as excel
 import urllib.request, json
+from flask import send_file
 import os
 from NLP.nlp_model.BERTModel import BERTModel
 import pandas as pd
@@ -205,6 +206,11 @@ def upload_file():
 def label():
     return render_template("label.html", title="Label Documents", labelsList=labelsList,
                            categories_list=categories_list)
+
+
+@app.route("/export")
+def export_csv():
+    return send_file(os.path.abspath(os.path.join(os.path.dirname(__file__), 'nlp_model', 'predict.csv')), as_attachment=True)
 
 
 @app.route('/index_get_data')

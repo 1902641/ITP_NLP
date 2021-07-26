@@ -1,11 +1,20 @@
 file,predict_label,probabilities,predict_label_code,manual_check,upload_date,verified_label
-CAF121_Hollways_Doors_-346638.pdf,timber door,"['24.47%', '75.53%']",1,True,23/07/2021,timber door
-CAF154_European_Door_Sets.pdf,timber door,"['21.04%', '78.96%']",1,True,23/07/2021,timber door
-CAF5005_Impact_Facilities_-_358816.pdf,timber door,"['37.63%', '62.37%']",1,True,23/07/2021,timber door
-CAF5018_Badman__Badman_Joinery_Ltd.pdf,timber door,"['38.12%', '61.88%']",1,True,23/07/2021,timber door
-CAF5048_-_Dooria_UK_-_421223.pdf,timber door,"['25.78%', '74.22%']",1,True,23/07/2021,timber door
-CF380_Premdor_Crosby.pdf,timber door,"['40.72%', '59.28%']",1,True,23/07/2021,timber door
-CF5267_Sherwin_Williams_428574.pdf,timber door,"['48.31%', '51.69%']",1,True,23/07/2021,steelwork protection / intumescent coatings
-CF5439_IDSL_Extension.pdf,timber door,"['34.35%', '65.65%']",1,True,23/07/2021,timber door
-CF5593_Multifire.pdf,timber door,"['48.53%', '51.47%']",1,True,23/07/2021,steelwork protection / intumescent coatings
-CF632_Norma_Doors.....pdf,timber door,"['46.59%', '53.41%']",1,False,23/07/2021,nan
+CAF121_Hollways_Doors_-346638.pdf,timber door,"['11.33%', '88.67%']",1,True,26/07/2021,timber door
+CAF144_Brian_Fell.pdf,timber door,"['14.85%', '85.15%']",1,True,26/07/2021,timber door
+CAF154_European_Door_Sets.pdf,timber door,"['12.43%', '87.57%']",1,True,26/07/2021,timber door
+CAF174_Arbor_Forest_Products_Ltd_-_503174.pdf,timber door,"['10.89%', '89.11%']",1,True,26/07/2021,timber door
+CAF182_Joseph_Parr_Limited.pdf,timber door,"['14.28%', '85.72%']",1,True,26/07/2021,timber door
+CAF5005_Impact_Facilities_-_358816.pdf,timber door,"['13.78%', '86.22%']",1,True,26/07/2021,timber door
+CAF5018_Badman__Badman_Joinery_Ltd.pdf,timber door,"['14.95%', '85.05%']",1,True,26/07/2021,timber door
+CAF5048_-_Dooria_UK_-_421223.pdf,timber door,"['15.41%', '84.59%']",1,True,26/07/2021,timber door
+CF177_Jeld_Wen_-_424807.pdf,timber door,"['16.99%', '83.01%']",1,True,26/07/2021,timber door
+CF380_Premdor_Crosby.pdf,timber door,"['17.95%', '82.05%']",1,True,26/07/2021,timber door
+CF5267_Sherwin_Williams_428574.pdf,steelwork protection / intumescent coatings,"['71.08%', '28.92%']",0,True,26/07/2021,steelwork protection / intumescent coatings
+CF5276_Jotun_-_413464.pdf,steelwork protection / intumescent coatings,"['69.38%', '30.62%']",0,True,26/07/2021,steelwork protection / intumescent coatings
+CF5351_Al_Jazeera.pdf,timber door,"['18.95%', '81.05%']",1,True,26/07/2021,steelwork protection / intumescent coatings
+CF5439_IDSL_Extension.pdf,timber door,"['42.34%', '57.66%']",1,True,26/07/2021,timber door
+CF5474_Jotun_Abu_Dhab.pdf,steelwork protection / intumescent coatings,"['64.39%', '35.61%']",0,True,26/07/2021,steelwork protection / intumescent coatings
+CF5591_Carboline_Company.pdf,steelwork protection / intumescent coatings,"['66.00%', '34.00%']",0,True,26/07/2021,steelwork protection / intumescent coatings
+CF5593_Multifire.pdf,steelwork protection / intumescent coatings,"['71.24%', '28.76%']",0,True,26/07/2021,steelwork protection / intumescent coatings
+CF5870_Decor_Ireland_-_428442.pdf,timber door,"['23.45%', '76.55%']",1,True,26/07/2021,steelwork protection / intumescent coatings
+CF632_Norma_Doors.....pdf,steelwork protection / intumescent coatings,"['73.16%', '26.84%']",0,True,26/07/2021,timber door
