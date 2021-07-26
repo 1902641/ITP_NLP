@@ -36,7 +36,7 @@ browse localhost:5000 in browser
 The model is saved and restored using checkpoints. Due to size limitations,
 the check point data file is compressed and split into parts in the following directory:
 "NLP/nlp_model/bert_model"
-Extract the model.ckpt-22.zip.001 in the same directory ("NLP/nlp_model/bert_model") using an archive application (e.g., 7zip)
+Extract the model.ckpt-21.zip.001 in the same directory ("NLP/nlp_model/bert_model") using an archive application (e.g., 7zip)
 
 Label Page : 
     - Retrieve all images and display (With page number)
