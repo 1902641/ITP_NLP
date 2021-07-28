@@ -1,8 +1,10 @@
 from flask import Flask
 import os
 from flask_dropzone import Dropzone
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
+Bootstrap(app)
 dropzone = Dropzone(app)
 app.config['DROPZONE_ALLOWED_FILE_CUSTOM'] = True
 app.config['DROPZONE_ALLOWED_FILE_TYPE'] = '.pdf'

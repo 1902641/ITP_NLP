@@ -21,14 +21,14 @@ def allowed_file(filename):
 
 categories_list = pdfManagement.retrieveCategories()
 
-labelsList = csvReader.readCSV()
 label_file = open("./NLP/nlp_model/label.txt", "r")
 categories_list = label_file.read().splitlines()
 
 
 @app.route("/")
 def home():
-    return render_template("home.html", labelsList=labelsList, categories_list=categories_list)
+    data = csvReader.readCSVPredict()
+    return render_template("home.html", data = data, categories_list=categories_list)
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -204,7 +204,7 @@ def upload_file():
 
 @app.route("/label")
 def label():
-    return render_template("label.html", title="Label Documents", labelsList=labelsList,
+    return render_template("label.html", title="Label Documents",  
                            categories_list=categories_list)
 
 
@@ -452,7 +452,7 @@ def verify():
     
 
 
-    return render_template('view.html', categories_list=categories_list, labelsList=labelsList,file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
+    return render_template('view.html', categories_list=categories_list,  file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
 
 
 @app.route("/trained_stats")

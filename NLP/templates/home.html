@@ -7,17 +7,46 @@
 	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <div style="padding-top:8%; background:rgba(255,255,255, 0.6);">
         <div class="container2" style="padding:20px;">
+            
+            <h2 style="margin-left: 6%;margin-bottom: 5%;">
+                NLP Model Statistics
+            </h2>
             <div class="row marginLeft">
-                <div class="col-lg">
-					<figure class="highcharts-figure">
-    <div id="container223"></div>
-    <div id="container222"></div>
-    <div id="container224"></div>
-    <p class="highcharts-description">
-    </p>
-</figure>
+                <div class="col-lg-4" style="border-style:none solid none none; border-color: #DCDCDC;">
+                    <h3>
+                        General Statistics
+                    </h4>
 
 
+                    <div class="container">
+                        <p><b>Number of training data:  </b>{{data["no_of_training_data"]}}</p>
+                        <p><b>Average Accuracy:  </b>{{data["accuracy"]}}</p>
+                        <p><b>Total Number of Labels:  </b>{{data["totalLabels"]}}</p>
+                        <p><b>Number of Files uploaded <br>(Manual Check):  </b>{{data["total_manual_check_data"]}}</p>
+                        <p><b>Number of Manual Checks Completed:  </b>{{data["checked_count"]}}</p>
+                        <p><b>Number of Files unchecked:</b>  {{data["files_unchecked"]}}</p>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <ul class="nav  nav-tabs" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                          <a class="nav-link active" id="pills-container223-tab" data-toggle="pill" href="#pills-container223" role="tab" aria-controls="pills-container223" aria-selected="true">Manual</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" id="pills-container222-tab" data-toggle="pill" href="#pills-container222" role="tab" aria-controls="pills-container222" aria-selected="false">Prediction</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" id="pills-container224-tab" data-toggle="pill" href="#pills-container224" role="tab" aria-controls="pills-container224" aria-selected="false">Accuracy</a>
+                        </li>
+                      </ul>
+					<div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="pills-container223" role="tabpanel" aria-labelledby="pills-container223-tab">
+                        {% include 'container223.html'%}</div>
+                        <div class="tab-pane fade" id="pills-container222" role="tabpanel" aria-labelledby="pills-container222-tab">
+                        {% include 'container222.html'%}</div>
+                        <div class="tab-pane fade" id="pills-container224" role="tabpanel" aria-labelledby="pills-container224-tab">
+                        {% include 'container224.html'%}</div>
+                      </div>
 				</div>
             </div>
         </div>
