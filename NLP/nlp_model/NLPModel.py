@@ -24,3 +24,6 @@ class NLPModel:
 
     def predict(self,in_sentences, single_prediction=False):
         pass
+
+    def clean_text(self, text):
+        pass
