@@ -56,8 +56,11 @@ def readCSVPredict():
 		if i["ManualCheck"] == "True":
 			checked_count += 1
 	accuracy = total_matched_docs/total_verified_docs
-	x = readCSV()
-	totalLabels = len(x)
+	labels = []
+	f = open("./NLP/nlp_model/label.txt", "r")
+	for i in f:
+		labels.append(i)
+	totalLabels = len(labels)
 	no_of_training_data = count
 	total_manual_check_data = len(predict_history_dataframe)
 	files_unchecked = total_manual_check_data - checked_count
