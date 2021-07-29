@@ -387,72 +387,50 @@ def pdf():
 
 @app.route('/view', methods=['GET', 'POST'])
 def verify():
-    predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
-    raw_prob_list = predict_history_dataframe['probabilities'].tolist()
-    prob_list = []
-    predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
-    confidence_list = []
-    for prob_list_item in raw_prob_list:
-        temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
-        prob_list.append(temp_list)
-    for probability, label_code in zip(prob_list, predicted_label_list):
-        confidence_list.append(probability[label_code].replace('\'', ''))
-    data_list = [
+        predict_history_dataframe = pd.read_csv("./NLP/nlp_model/predict.csv")
+        raw_prob_list = predict_history_dataframe['probabilities'].tolist()
+        prob_list = []
+        predicted_label_list = predict_history_dataframe['predict_label_code'].tolist()
+        confidence_list = []
+        for prob_list_item in raw_prob_list:
+            temp_list = prob_list_item.replace('[', '').replace(']','').replace(' ', '').split(',')
+            prob_list.append(temp_list)
+        for probability, label_code in zip(prob_list, predicted_label_list):
+            confidence_list.append(probability[label_code].replace('\'', ''))
+        data_list = [
         {
             "PDF_Name": file_name,
             "Label_Attached": predict_label,
             "Confidence_Level": confidence,
             "DateOfUpload": upload_date,
-            "ManualCheck": f'{manual_check}'
-        } for file_name, predict_label, confidence, upload_date, manual_check
+            "ManualCheck": f'{manual_check}',
+            "VerifiedLabel": str(verified_label),
+        } for file_name, predict_label, confidence, upload_date, manual_check, verified_label
         in zip(predict_history_dataframe['file'], predict_history_dataframe['predict_label'],
-               confidence_list, predict_history_dataframe['upload_date'],
-               predict_history_dataframe['manual_check'])]
-    data = {
-        "data": data_list
-    }
+                confidence_list, predict_history_dataframe['upload_date'],
+                predict_history_dataframe['manual_check'], predict_history_dataframe['verified_label'])]
+        count = 0
+        unchecked_count = 0
+        label_attached = ""
+        confidence_level=0
+        cl = []
+        for i in data_list:
+            count +=1
+            if i["VerifiedLabel"] == "nan":
+                file = i["PDF_Name"]
+                unchecked_count+=1
+                label_attached = i["Label_Attached"]
+                x = i["Confidence_Level"]
+                
+                cl = x.replace('[', '').replace(']','').replace('\'','').replace(' ', '').replace('%', '').split(',')
+                [float(i) for i in cl]
+        percentage = (count-unchecked_count)/count*100
+        if cl != []:
+            confidence_level = max(cl)
+        else:
+            return render_template('upload.html')
+        return render_template('view.html', file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
 
-    file = request.args.get('file')
-    label = request.args.get('label')
-    current = 1
-    if(label == None):
-        current = 0
-    print("HERE")
-    print(label)
-    index = 0
-    found = 0
-    label_attached = data["data"][0]["Label_Attached"]
-    confidence_level = data["data"][0]["Confidence_Level"]
-    predict_history_dataframe = predict_history_dataframe.astype({"verified_label": str})
-    for i,v in enumerate(data["data"]):
-        if v['PDF_Name']==file:
-            if current == 1 and i+1 == len(data["data"]):
-                return render_template('upload.html', categories_list=categories_list)
-
-            print(data["data"][i+current])
-            label_attached = data["data"][i+current]["Label_Attached"]
-            confidence_level = data["data"][i+current]["Confidence_Level"]
-            index = i+current
-            predict_history_dataframe.at[i,"verified_label"] = label
-            predict_history_dataframe.at[i,"manual_check"] = True
-            print(label)
-            print(predict_history_dataframe)
-            found = 1
-            file=data["data"][i+current]["PDF_Name"]
-
-            break
-    if not found:
-        file = data["data"][0]["PDF_Name"]
-    #print(predict_history_dataframe.at[i, 'verified_label'])
-    predict_history_dataframe.to_csv("./NLP/nlp_model/predict.csv", encoding='utf-8', index=False)
-
-        
-    percentage = index/len(data["data"]) * 100
-    percentage = int(percentage)
-    
-
-
-    return render_template('view.html', categories_list=categories_list,  file=file, percentage=percentage, label_attached=label_attached, confidence_level=confidence_level)
 
 
 @app.route("/trained_stats")

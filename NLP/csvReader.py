@@ -61,7 +61,7 @@ def readCSVPredict():
 	for i in f:
 		labels.append(i)
 	totalLabels = len(labels)
-	no_of_training_data = count
+	no_of_training_data = len(training_data)
 	total_manual_check_data = len(predict_history_dataframe)
 	files_unchecked = total_manual_check_data - checked_count
 	
