@@ -426,6 +426,10 @@ def verify():
     predict_history_dataframe = predict_history_dataframe.astype({"verified_label": str})
     for i,v in enumerate(data["data"]):
         if v['PDF_Name']==file:
+
+            predict_history_dataframe.at[i,"verified_label"] = label
+            predict_history_dataframe.at[i,"manual_check"] = True
+            predict_history_dataframe.to_csv("./NLP/nlp_model/predict.csv", encoding='utf-8', index=False)
             if current == 1 and i+1 == len(data["data"]):
                 return render_template('upload.html', categories_list=categories_list)
 
@@ -433,8 +437,6 @@ def verify():
             label_attached = data["data"][i+current]["Label_Attached"]
             confidence_level = data["data"][i+current]["Confidence_Level"]
             index = i+current
-            predict_history_dataframe.at[i,"verified_label"] = label
-            predict_history_dataframe.at[i,"manual_check"] = True
             print(label)
             print(predict_history_dataframe)
             found = 1
@@ -444,7 +446,6 @@ def verify():
     if not found:
         file = data["data"][0]["PDF_Name"]
     #print(predict_history_dataframe.at[i, 'verified_label'])
-    predict_history_dataframe.to_csv("./NLP/nlp_model/predict.csv", encoding='utf-8', index=False)
 
         
     percentage = index/len(data["data"]) * 100
